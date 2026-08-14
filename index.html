@@ -5,12 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>O que você não vê - Exposição Digital</title>
   
-  <!-- SDK do Firebase (Versão Compatível Web) -->
+  <!-- SDK do Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
   <style>
-    /* RESET & DESIGN GALERIA */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -32,7 +31,7 @@
       overflow-x: hidden;
     }
 
-    /* TELA DE ENTRADA / APRESENTAÇÃO */
+    /* TELA DE ENTRADA */
     #welcome-screen {
       position: fixed;
       top: 0;
@@ -81,9 +80,6 @@
       flex-direction: column;
       align-items: center;
       margin-bottom: 25px;
-      background: transparent;
-      padding: 0;
-      border: none;
       max-width: 500px;
       width: 100%;
     }
@@ -152,31 +148,35 @@
       box-shadow: 0 0 20px rgba(201, 160, 80, 0.4);
     }
 
-    /* HEADER & TÍTULO NOVO */
+    /* HEADER & TÍTULO MAIS ALTO (ESTICADO VERTICALMENTE) */
     header {
-      padding: 60px 20px 30px;
+      padding: 50px 20px 20px;
       text-align: center;
     }
 
     header h2 {
       font-family: 'Arial Narrow', sans-serif;
-      font-size: 2.2rem;
+      font-size: 2.4rem;
       font-weight: 700;
-      letter-spacing: 2px;
+      letter-spacing: 3px;
       text-transform: uppercase;
       color: #ffffff;
       margin: 0;
+      display: inline-block;
+      /* Deixa o título mais alto / esticado verticalmente */
+      transform: scaleY(1.7);
+      transform-origin: center;
     }
 
     header p {
       color: var(--accent-color);
-      margin-top: 10px;
+      margin-top: 25px; /* Espaço ajustado por conta do scaleY */
       font-size: 1.1rem;
       letter-spacing: 1px;
       font-weight: 300;
     }
 
-    /* BOTÃO FLUTUANTE DE INÍCIO (CASINHA / GLASSMORPHISM) */
+    /* BOTÃO FLUTUANTE DE INÍCIO */
     .btn-floating-home {
       position: fixed;
       top: 18px;
@@ -217,10 +217,6 @@
       box-shadow: 0 0 15px rgba(201, 160, 80, 0.5);
     }
 
-    .btn-floating-home:active svg {
-      transform: scale(0.9);
-    }
-
     /* GRADE DA GALERIA */
     .gallery-grid {
       display: grid;
@@ -228,7 +224,7 @@
       gap: 40px;
       max-width: 1100px;
       margin: 0 auto;
-      padding: 40px 20px 60px;
+      padding: 30px 20px 40px;
     }
 
     .photo-card {
@@ -261,7 +257,7 @@
       grid-column: 1 / -1;
       max-width: 850px;
       width: 100%;
-      margin: 30px auto;
+      margin: 20px auto;
       border: 1px solid var(--accent-color);
       box-shadow: 0 0 35px rgba(201, 160, 80, 0.2);
     }
@@ -297,7 +293,6 @@
       margin-bottom: 15px;
     }
 
-    /* AÇÕES DO CARD (CURTIR) */
     .card-actions {
       display: flex;
       align-items: center;
@@ -318,10 +313,8 @@
       font-size: 0.9rem;
       transition: color 0.2s, transform 0.1s ease;
       outline: none;
-      -webkit-tap-highlight-color: transparent;
     }
 
-    /* ESTILO DO CORAÇÃO SVG (CONTORNO BRANCO -> PREENCHIDO AMARELO) */
     .heart-svg {
       width: 18px;
       height: 18px;
@@ -341,29 +334,45 @@
       color: var(--accent-color);
     }
 
-    /* RODAPÉ FOSCO */
+    /* RODAPÉ AJUSTADO (MAIS PRÓXIMO E EM BLOCOS HIERÁRQUICOS) */
     footer {
       position: relative;
-      padding: 80px 20px 120px;
+      padding: 40px 20px 100px;
       text-align: center;
       background: linear-gradient(180deg, rgba(8,8,8,0) 0%, rgba(18,18,22,0.95) 100%);
       backdrop-filter: blur(12px);
       color: var(--text-muted);
       font-size: 0.9rem;
-      line-height: 1.8;
-      margin-top: 40px;
+      line-height: 1.6;
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
     }
 
-    footer strong {
+    /* Bloco em Hierarquia: Amarelo em cima, Branco embaixo, centralizado */
+    .footer-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .footer-title {
       color: var(--accent-color);
       font-weight: 400;
+      font-size: 0.95rem;
+      letter-spacing: 0.5px;
     }
 
-    footer p {
-      margin-bottom: 8px;
+    .footer-desc {
+      color: var(--text-color);
+      font-weight: 300;
+      font-size: 0.9rem;
     }
 
-    /* PLAYER DE MÚSICA DE FUNDO */
+    /* PLAYER DE MÚSICA */
     .audio-player-container {
       position: fixed;
       bottom: 25px;
@@ -388,18 +397,12 @@
       font-size: 1rem;
       font-weight: bold;
       cursor: pointer;
-      -webkit-appearance: none;
-      appearance: none;
-      outline: none;
-      padding: 0;
-      margin: 0;
       display: flex;
       align-items: center;
       justify-content: center;
       width: 28px;
       height: 28px;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
+      outline: none;
     }
 
     .progress-bar {
@@ -423,7 +426,7 @@
       accent-color: var(--accent-color);
     }
 
-    /* LIGHTBOX COM INTERAÇÃO (COMENTÁRIOS E CURTIDAS) */
+    /* LIGHTBOX */
     .lightbox {
       position: fixed;
       top: 0;
@@ -487,7 +490,6 @@
       font-weight: 300;
     }
 
-    /* SESSÃO DE COMENTÁRIOS NO LIGHTBOX */
     .comments-section {
       width: 100%;
       max-width: 650px;
@@ -515,6 +517,7 @@
       padding-right: 5px;
     }
 
+    /* ORDEM DO COMENTÁRIO: TEXTO PRIMEIRO, NOME DEPOIS */
     .comment-item {
       background: #111;
       padding: 12px 14px;
@@ -522,7 +525,7 @@
       border-left: 2px solid var(--accent-color);
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
     }
 
     .comment-text {
@@ -586,7 +589,7 @@
 </head>
 <body>
 
-  <!-- BOTÃO FLUTUANTE DE INÍCIO COM ÍCONE DE CASINHA -->
+  <!-- BOTÃO FLUTUANTE DE INÍCIO -->
   <button class="btn-floating-home" onclick="openWelcomeScreen()" title="Início" aria-label="Início">
     <svg viewBox="0 0 24 24">
       <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -626,14 +629,27 @@
 
   <main class="gallery-grid" id="gallery"></main>
 
+  <!-- RODAPÉ REESTRUTURADO EM BLOCOS HIERÁRQUICOS -->
   <footer>
-    <p><strong>O QUE VOCÊ NÃO VÊ</strong> — Exposição Digital Fotográfica & Sonora</p>
-    <p>Trabalho de Conclusão de Curso (TCC) em <strong>Rádio, TV e Internet</strong></p>
-    <p>Autor e Curadoria: <strong>Francisco Leonardo</strong> | Produção: Equipe do Projeto</p>
-    <p style="margin-top: 15px; font-size: 0.8rem; opacity: 0.4;">© Todos os direitos reservados aos autores e colaboradores.</p>
+    <div class="footer-block">
+      <span class="footer-title">O QUE VOCÊ NÃO VÊ</span>
+      <span class="footer-desc">Exposição Digital Fotográfica & Sonora</span>
+    </div>
+    
+    <div class="footer-block">
+      <span class="footer-title">Trabalho de Conclusão de Curso (TCC)</span>
+      <span class="footer-desc">Rádio, TV e Internet</span>
+    </div>
+
+    <div class="footer-block">
+      <span class="footer-title">Autor e Curadoria</span>
+      <span class="footer-desc">Francisco Leonardo | Produção: Equipe do Projeto</span>
+    </div>
+
+    <p style="margin-top: 10px; font-size: 0.75rem; opacity: 0.4;">© Todos os direitos reservados aos autores e colaboradores.</p>
   </footer>
 
-  <!-- PLAYER DE MÚSICA DE FUNDO -->
+  <!-- PLAYER DE MÚSICA -->
   <div class="audio-player-container">
     <button class="player-btn" id="play-pause-btn" onclick="toggleMusic()">▶</button>
     <div class="progress-bar" onclick="seekMusic(event)">
@@ -643,7 +659,7 @@
     <audio id="bg-music" src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=piano-ambient-112199.mp3" loop preload="auto"></audio>
   </div>
 
-  <!-- LIGHTBOX COM COMENTÁRIOS -->
+  <!-- LIGHTBOX COM COMENTÁRIOS CORRIGIDOS (TEXTO PRIMEIRO) -->
   <div class="lightbox" id="lightbox" onclick="closeLightbox()">
     <span class="close-lightbox">&times;</span>
     <div class="lightbox-content" onclick="event.stopPropagation()">
@@ -653,7 +669,6 @@
         <p id="lightbox-desc"></p>
       </div>
 
-      <!-- SESSÃO DE INTERAÇÃO -->
       <div class="comments-section">
         <h4>Comentários e Reflexões</h4>
         <div class="comments-list" id="comments-list">
@@ -671,7 +686,6 @@
   </div>
 
   <script>
-    // CONFIGURAÇÃO DO FIREBASE
     const firebaseConfig = {
       apiKey: "SUA_API_KEY",
       authDomain: "SEU_PROJECT_ID.firebaseapp.com",
@@ -763,7 +777,6 @@
           </div>
         `;
         gallery.appendChild(card);
-
         listenLikes(item.id);
       });
     }
@@ -774,9 +787,7 @@
       const btnEl = document.getElementById(`like-btn-${photoId}`);
       let currentLikes = parseInt(countEl.innerText) || 0;
 
-      if (btnEl) {
-        btnEl.classList.toggle('liked');
-      }
+      if (btnEl) btnEl.classList.toggle('liked');
 
       if (db) {
         db.ref(`likes/${photoId}`).transaction((likes) => (likes || 0) + 1);
@@ -814,6 +825,7 @@
         Object.values(data).forEach(c => {
           const item = document.createElement('div');
           item.className = 'comment-item';
+          // ORDEM CORRIGIDA: Texto primeiro, Autor logo abaixo
           item.innerHTML = `
             <div class="comment-text">${escapeHtml(c.text)}</div>
             <div class="comment-author">— ${escapeHtml(c.author)}</div>
