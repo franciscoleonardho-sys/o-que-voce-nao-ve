@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>O que você não vê - Exposição Digital</title>
+  
+  <!-- SDK do Firebase (Versão Compatível Web) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
   <style>
     /* RESET & DESIGN GALERIA */
     * {
@@ -105,7 +110,6 @@
       font-weight: 400;
     }
 
-    /* ÁUDIO DE INTRODUÇÃO DO AUTOR */
     .intro-audio-box {
       margin-bottom: 30px;
       display: flex;
@@ -154,7 +158,6 @@
       text-align: center;
     }
 
-    /* BOTÃO INÍCIO FLUTUANTE */
     .btn-floating-home {
       position: fixed;
       top: 20px;
@@ -212,6 +215,7 @@
       border: 1px solid #1a1a1a;
       display: flex;
       flex-direction: column;
+      position: relative;
     }
 
     .photo-card:hover {
@@ -265,6 +269,33 @@
       color: var(--text-color);
       line-height: 1.6;
       font-weight: 300;
+      margin-bottom: 15px;
+    }
+
+    /* AÇÕES DO CARD (CURTIR) */
+    .card-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding-top: 12px;
+      margin-top: auto;
+    }
+
+    .btn-like {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    .btn-like:hover, .btn-like.liked {
+      color: #e74c3c;
     }
 
     /* RODAPÉ FOSCO */
@@ -289,7 +320,7 @@
       margin-bottom: 8px;
     }
 
-    /* PLAYER DE MÚSICA DE FUNDO ORIGINAL */
+    /* PLAYER DE MÚSICA DE FUNDO */
     .audio-player-container {
       position: fixed;
       bottom: 25px;
@@ -335,14 +366,14 @@
       accent-color: var(--accent-color);
     }
 
-    /* LIGHTBOX */
+    /* LIGHTBOX COM INTERAÇÃO (COMENTÁRIOS E CURTIDAS) */
     .lightbox {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0,0,0,0.95);
+      background: rgba(0,0,0,0.96);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -351,6 +382,7 @@
       pointer-events: none;
       transition: opacity 0.3s ease;
       padding: 20px;
+      overflow-y: auto;
     }
 
     .lightbox.active {
@@ -359,24 +391,28 @@
     }
 
     .lightbox-content {
-      max-width: 900px;
+      max-width: 800px;
       width: 100%;
       max-height: 90vh;
       display: flex;
       flex-direction: column;
       align-items: center;
+      overflow-y: auto;
+      padding-right: 5px;
     }
 
     .lightbox-img {
       max-width: 100%;
-      max-height: 65vh;
+      max-height: 50vh;
       object-fit: contain;
       box-shadow: 0 0 30px rgba(0,0,0,0.9);
+      border-radius: 4px;
     }
 
     .lightbox-caption {
       margin-top: 20px;
       text-align: center;
+      width: 100%;
       max-width: 650px;
     }
 
@@ -388,10 +424,93 @@
     }
 
     .lightbox-caption p {
-      font-size: 1rem;
+      font-size: 0.95rem;
       color: var(--text-color);
       line-height: 1.6;
       font-weight: 300;
+    }
+
+    /* SESSÃO DE COMENTÁRIOS NO LIGHTBOX */
+    .comments-section {
+      width: 100%;
+      max-width: 650px;
+      margin-top: 25px;
+      border-top: 1px solid #222;
+      padding-top: 20px;
+      text-align: left;
+    }
+
+    .comments-section h4 {
+      font-size: 0.95rem;
+      color: var(--accent-color);
+      margin-bottom: 15px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .comments-list {
+      max-height: 180px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-right: 5px;
+    }
+
+    .comment-item {
+      background: #111;
+      padding: 10px 14px;
+      border-radius: 4px;
+      border-left: 2px solid var(--accent-color);
+    }
+
+    .comment-author {
+      font-size: 0.8rem;
+      color: var(--accent-color);
+      font-weight: bold;
+      margin-bottom: 3px;
+    }
+
+    .comment-text {
+      font-size: 0.88rem;
+      color: var(--text-color);
+      line-height: 1.4;
+    }
+
+    .comment-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .comment-form input, .comment-form textarea {
+      background: #181818;
+      border: 1px solid #333;
+      color: #fff;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.85rem;
+    }
+
+    .comment-form input:focus, .comment-form textarea:focus {
+      outline: none;
+      border-color: var(--accent-color);
+    }
+
+    .btn-send-comment {
+      align-self: flex-end;
+      background: var(--accent-color);
+      color: #000;
+      border: none;
+      padding: 8px 20px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      border-radius: 2px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
     .close-lightbox {
@@ -407,10 +526,9 @@
 </head>
 <body>
 
-  <!-- BOTÃO INÍCIO FLUTUANTE -->
   <button class="btn-floating-home" onclick="openWelcomeScreen()">Início</button>
 
-  <!-- TELA DE ENTRADA & APRESENTAÇÃO -->
+  <!-- TELA DE ENTRADA -->
   <div id="welcome-screen">
     <h1>O que você não vê</h1>
     <p class="sub-title">Uma experiência de pausa, observação e escuta. Coloque os fones para uma melhor imersão.</p>
@@ -425,7 +543,6 @@
       </div>
     </div>
 
-    <!-- ÁUDIO DE INTRODUÇÃO DO AUTOR -->
     <div class="intro-audio-box">
       <label>🎧 Ouça a Introdução do Autor</label>
       <audio id="author-audio" controls preload="metadata">
@@ -443,7 +560,6 @@
 
   <main class="gallery-grid" id="gallery"></main>
 
-  <!-- RODAPÉ AUTORAL -->
   <footer>
     <p><strong>O QUE VOCÊ NÃO VÊ</strong> — Exposição Digital Fotográfica & Sonora</p>
     <p>Trabalho de Conclusão de Curso (TCC) em <strong>Rádio, TV e Internet</strong></p>
@@ -451,7 +567,7 @@
     <p style="margin-top: 15px; font-size: 0.8rem; opacity: 0.4;">© Todos os direitos reservados aos autores e colaboradores.</p>
   </footer>
 
-  <!-- PLAYER DE MÚSICA DE FUNDO INICIAL -->
+  <!-- PLAYER DE MÚSICA DE FUNDO -->
   <div class="audio-player-container">
     <button class="player-btn" id="play-pause-btn" onclick="toggleMusic()">▶</button>
     <div class="progress-bar" onclick="seekMusic(event)">
@@ -461,7 +577,7 @@
     <audio id="bg-music" src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=piano-ambient-112199.mp3" loop preload="auto"></audio>
   </div>
 
-  <!-- LIGHTBOX -->
+  <!-- LIGHTBOX COM COMENTÁRIOS -->
   <div class="lightbox" id="lightbox" onclick="closeLightbox()">
     <span class="close-lightbox">&times;</span>
     <div class="lightbox-content" onclick="event.stopPropagation()">
@@ -470,12 +586,48 @@
         <h3 id="lightbox-title"></h3>
         <p id="lightbox-desc"></p>
       </div>
+
+      <!-- SESSÃO DE INTERAÇÃO -->
+      <div class="comments-section">
+        <h4>Comentários e Reflexões</h4>
+        <div class="comments-list" id="comments-list">
+          <p style="font-size: 0.8rem; color: #666;">Carregando comentários...</p>
+        </div>
+
+        <form class="comment-form" onsubmit="submitComment(event)">
+          <input type="text" id="comment-author-input" placeholder="Seu Nome ou Apelido" required>
+          <textarea id="comment-text-input" rows="2" placeholder="O que esta imagem fez você sentir?" required></textarea>
+          <button type="submit" class="btn-send-comment">Comentar</button>
+        </form>
+      </div>
+
     </div>
   </div>
 
   <script>
-    const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQPvjhGZgcE7oZbDvbS8z7Zw4LeqBvRP6Qk7ppQPhfayl40_2fG21MgiNtVtoJNYsujOiEXtQ5W3SCw/pub?output=csv";
+    // CONFIGURAÇÃO DO FIREBASE (Insira seus dados aqui)
+    const firebaseConfig = {
+      apiKey: "SUA_API_KEY",
+      authDomain: "SEU_PROJECT_ID.firebaseapp.com",
+      databaseURL: "https://SEU_PROJECT_ID-default-rtdb.firebaseio.com",
+      projectId: "SEU_PROJECT_ID",
+      storageBucket: "SEU_PROJECT_ID.appspot.com",
+      messagingSenderId: "SEU_ID",
+      appId: "SEU_APP_ID"
+    };
 
+    // Inicialização do Firebase se a chave for válida
+    let db = null;
+    try {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.database();
+    } catch(e) {
+      console.log("Firebase não configurado ainda. As curtidas e comentários funcionarão em modo de demonstração local.");
+    }
+
+    const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQPvjhGZgcE7oZbDvbS8z7Zw4LeqBvRP6Qk7ppQPhfayl40_2fG21MgiNtVtoJNYsujOiEXtQ5W3SCw/pub?output=csv";
+    
+    let currentActivePhotoId = null;
     const music = document.getElementById('bg-music');
     music.volume = 0.2;
 
@@ -509,6 +661,7 @@
           const destaqueValor = row[5] ? row[5].replace(/^"|"$/g, '').trim().toLowerCase() : 'nao';
           
           result.push({
+            id: 'foto_' + row[0],
             ordem: row[0],
             titulo: row[1].replace(/^"|"$/g, ''),
             url: row[2].replace(/^"|"$/g, ''),
@@ -527,18 +680,100 @@
       items.forEach(item => {
         const card = document.createElement('div');
         card.className = `photo-card ${item.destaque ? 'highlight' : ''}`;
-        card.onclick = () => {
-          openLightbox(item.url, item.titulo, item.desc);
-        };
+        
         card.innerHTML = `
-          <img src="${item.url}" alt="${item.titulo}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=500&auto=format&fit=crop'">
+          <img src="${item.url}" alt="${item.titulo}" loading="lazy" onclick="openLightbox('${item.id}', '${item.url}', '${item.titulo}', '${item.desc}')" onerror="this.src='https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=500&auto=format&fit=crop'">
           <div class="photo-info">
-            <div class="photo-title">${item.titulo} ${item.destaque ? '✦' : ''}</div>
+            <div class="photo-title" onclick="openLightbox('${item.id}', '${item.url}', '${item.titulo}', '${item.desc}')">${item.titulo} ${item.destaque ? '✦' : ''}</div>
             <div class="photo-desc">${item.desc}</div>
+            <div class="card-actions">
+              <button class="btn-like" id="like-btn-${item.id}" onclick="likePhoto('${item.id}', event)">
+                ❤️ <span id="like-count-${item.id}">0</span>
+              </button>
+              <span style="font-size: 0.8rem; color: #555; cursor: pointer;" onclick="openLightbox('${item.id}', '${item.url}', '${item.titulo}', '${item.desc}')">💬 Comentar</span>
+            </div>
           </div>
         `;
         gallery.appendChild(card);
+
+        // Ouvir número de curtidas em tempo real
+        listenLikes(item.id);
       });
+    }
+
+    /* SISTEMA DE CURTIDAS */
+    function likePhoto(photoId, event) {
+      event.stopPropagation();
+      const countEl = document.getElementById(`like-count-${photoId}`);
+      let currentLikes = parseInt(countEl.innerText) || 0;
+
+      if (db) {
+        db.ref(`likes/${photoId}`).transaction((likes) => (likes || 0) + 1);
+      } else {
+        countEl.innerText = currentLikes + 1;
+      }
+    }
+
+    function listenLikes(photoId) {
+      if (!db) return;
+      db.ref(`likes/${photoId}`).on('value', (snapshot) => {
+        const val = snapshot.val() || 0;
+        const el = document.getElementById(`like-count-${photoId}`);
+        if (el) el.innerText = val;
+      });
+    }
+
+    /* SISTEMA DE COMENTÁRIOS */
+    function loadComments(photoId) {
+      const listEl = document.getElementById('comments-list');
+      listEl.innerHTML = '';
+
+      if (!db) {
+        listEl.innerHTML = '<p style="font-size: 0.8rem; color: #666;">Conecte o Firebase para carregar comentários em tempo real.</p>';
+        return;
+      }
+
+      db.ref(`comments/${photoId}`).on('value', (snapshot) => {
+        listEl.innerHTML = '';
+        const data = snapshot.val();
+        if (!data) {
+          listEl.innerHTML = '<p style="font-size: 0.8rem; color: #666;">Seja o primeiro a deixar uma reflexão sobre esta foto.</p>';
+          return;
+        }
+
+        Object.values(data).forEach(c => {
+          const item = document.createElement('div');
+          item.className = 'comment-item';
+          item.innerHTML = `
+            <div class="comment-author">${escapeHtml(c.author)}</div>
+            <div class="comment-text">${escapeHtml(c.text)}</div>
+          `;
+          listEl.appendChild(item);
+        });
+        listEl.scrollTop = listEl.scrollHeight;
+      });
+    }
+
+    function submitComment(e) {
+      e.preventDefault();
+      const authorInput = document.getElementById('comment-author-input');
+      const textInput = document.getElementById('comment-text-input');
+
+      if (!authorInput.value.trim() || !textInput.value.trim()) return;
+
+      if (db && currentActivePhotoId) {
+        db.ref(`comments/${currentActivePhotoId}`).push({
+          author: authorInput.value.trim(),
+          text: textInput.value.trim(),
+          timestamp: Date.now()
+        });
+      }
+
+      textInput.value = '';
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
     async function fetchFromSheets() {
@@ -554,15 +789,12 @@
 
     function enterExhibition() {
       document.getElementById('welcome-screen').classList.add('hidden');
-      
       const authorAudio = document.getElementById('author-audio');
       if (authorAudio) authorAudio.pause();
 
       music.play().then(() => {
         document.getElementById('play-pause-btn').innerText = '⏸';
-      }).catch(e => {
-        console.log("Erro ao tocar áudio:", e);
-      });
+      }).catch(e => console.log("Erro de reprodução:", e));
     }
 
     function openWelcomeScreen() {
@@ -591,11 +823,14 @@
       }
     }
 
-    function openLightbox(url, title, desc) {
+    function openLightbox(id, url, title, desc) {
+      currentActivePhotoId = id;
       document.getElementById('lightbox-img').src = url;
       document.getElementById('lightbox-title').innerText = title;
       document.getElementById('lightbox-desc').innerText = desc;
       document.getElementById('lightbox').classList.add('active');
+
+      loadComments(id);
     }
 
     function closeLightbox() {
