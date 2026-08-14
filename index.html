@@ -272,7 +272,7 @@
       margin-bottom: 15px;
     }
 
-    /* AÇÕES DO CARD (CURTIR) */
+    /* AÇÕES DO CARD (CURTIR COM CORAÇÃO DOURADO) */
     .card-actions {
       display: flex;
       align-items: center;
@@ -289,13 +289,32 @@
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       font-size: 0.9rem;
-      transition: color 0.2s;
+      transition: color 0.3s ease;
     }
 
-    .btn-like:hover, .btn-like.liked {
-      color: #e74c3c;
+    .heart-icon {
+      width: 18px;
+      height: 18px;
+      fill: transparent;
+      stroke: #ffffff;
+      stroke-width: 2;
+      transition: all 0.3s ease;
+    }
+
+    .btn-like:hover .heart-icon {
+      stroke: var(--accent-color);
+      transform: scale(1.1);
+    }
+
+    .btn-like.liked {
+      color: var(--accent-color);
+    }
+
+    .btn-like.liked .heart-icon {
+      fill: var(--accent-color);
+      stroke: var(--accent-color);
     }
 
     /* RODAPÉ FOSCO */
@@ -411,6 +430,7 @@
 
     .lightbox-caption {
       margin-top: 20px;
+      margin-bottom: 10px;
       text-align: center;
       width: 100%;
       max-width: 650px;
@@ -434,7 +454,7 @@
     .comments-section {
       width: 100%;
       max-width: 650px;
-      margin-top: 25px;
+      margin-top: 20px;
       border-top: 1px solid #222;
       padding-top: 20px;
       text-align: left;
@@ -594,9 +614,10 @@
           <p style="font-size: 0.8rem; color: #666;">Carregando comentários...</p>
         </div>
 
+        <!-- FORMULÁRIO REORDENADO: COMENTÁRIO PRIMEIRO, NOME DEPOIS -->
         <form class="comment-form" onsubmit="submitComment(event)">
+          <textarea id="comment-text-input" rows="3" placeholder="O que esta imagem fez você sentir?" required></textarea>
           <input type="text" id="comment-author-input" placeholder="Seu Nome ou Apelido" required>
-          <textarea id="comment-text-input" rows="2" placeholder="O que esta imagem fez você sentir?" required></textarea>
           <button type="submit" class="btn-send-comment">Comentar</button>
         </form>
       </div>
@@ -677,45 +698,83 @@
     function renderGallery(items) {
       const gallery = document.getElementById('gallery');
       gallery.innerHTML = '';
+      
+      const localLikes = JSON.parse(localStorage.getItem('user_likes') || '{}');
+
       items.forEach(item => {
         const card = document.createElement('div');
         card.className = `photo-card ${item.destaque ? 'highlight' : ''}`;
         
+        const isLiked = localLikes[item.id] ? 'liked' : '';
+
         card.innerHTML = `
           <img src="${item.url}" alt="${item.titulo}" loading="lazy" onclick="openLightbox('${item.id}', '${item.url}', '${item.titulo}', '${item.desc}')" onerror="this.src='https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=500&auto=format&fit=crop'">
           <div class="photo-info">
             <div class="photo-title" onclick="openLightbox('${item.id}', '${item.url}', '${item.titulo}', '${item.desc}')">${item.titulo} ${item.destaque ? '✦' : ''}</div>
             <div class="photo-desc">${item.desc}</div>
             <div class="card-actions">
-              <button class="btn-like" id="like-btn-${item.id}" onclick="likePhoto('${item.id}', event)">
-                ❤️ <span id="like-count-${item.id}">0</span>
+              <button class="btn-like ${isLiked}" id="like-btn-${item.id}" onclick="likePhoto('${item.id}', event)">
+                <svg class="heart-icon" viewBox="0 0 24 24">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                <span id="like-count-${item.id}">0</span>
               </button>
-              <span style="font-size: 0.8rem; color: #555; cursor: pointer;" onclick="openLightbox('${item.id}', '${item.url}', '${item.titulo}', '${item.desc}')">💬 Comentar</span>
+              <span style="font-size: 0.8rem; color: #777; cursor: pointer;" onclick="openLightbox('${item.id}', '${item.url}', '${item.titulo}', '${item.desc}')">💬 Comentar</span>
             </div>
           </div>
         `;
         gallery.appendChild(card);
 
-        // Ouvir número de curtidas em tempo real
+        // Ouvir número de curtidas em tempo real ou carregar do salvamento local
         listenLikes(item.id);
       });
     }
 
-    /* SISTEMA DE CURTIDAS */
+    /* SISTEMA DE CURTIDAS COM LOCALSTORAGE E SUPORTE A FIREBASE */
     function likePhoto(photoId, event) {
       event.stopPropagation();
+      const btn = document.getElementById(`like-btn-${photoId}`);
       const countEl = document.getElementById(`like-count-${photoId}`);
       let currentLikes = parseInt(countEl.innerText) || 0;
 
-      if (db) {
-        db.ref(`likes/${photoId}`).transaction((likes) => (likes || 0) + 1);
+      let localLikes = JSON.parse(localStorage.getItem('user_likes') || '{}');
+
+      if (!localLikes[photoId]) {
+        // Usuário curtiu
+        localLikes[photoId] = true;
+        btn.classList.add('liked');
+        
+        if (db) {
+          db.ref(`likes/${photoId}`).transaction((likes) => (likes || 0) + 1);
+        } else {
+          countEl.innerText = currentLikes + 1;
+        }
       } else {
-        countEl.innerText = currentLikes + 1;
+        // Usuário descurtiu
+        delete localLikes[photoId];
+        btn.classList.remove('liked');
+        
+        if (db) {
+          db.ref(`likes/${photoId}`).transaction((likes) => Math.max((likes || 1) - 1, 0));
+        } else {
+          countEl.innerText = Math.max(currentLikes - 1, 0);
+        }
       }
+
+      localStorage.setItem('user_likes', JSON.stringify(localLikes));
     }
 
     function listenLikes(photoId) {
-      if (!db) return;
+      if (!db) {
+        // Se sem Firebase, recupera contagem simulada ou salva localmente
+        const localLikes = JSON.parse(localStorage.getItem('user_likes') || '{}');
+        const countEl = document.getElementById(`like-count-${photoId}`);
+        if (countEl && localLikes[photoId]) {
+          countEl.innerText = 1;
+        }
+        return;
+      }
+
       db.ref(`likes/${photoId}`).on('value', (snapshot) => {
         const val = snapshot.val() || 0;
         const el = document.getElementById(`like-count-${photoId}`);
