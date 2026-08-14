@@ -31,7 +31,7 @@
       overflow-x: hidden;
     }
 
-    /* TELA DE ENTRADA */
+    /* TELA DE ENTRADA - TÍTULO PADRONIZADO E ESTICADO */
     #welcome-screen {
       position: fixed;
       top: 0;
@@ -56,12 +56,16 @@
     }
 
     #welcome-screen h1 {
-      font-size: 2.2rem;
-      font-weight: 300;
-      letter-spacing: 5px;
-      margin-bottom: 15px;
+      font-family: 'Arial Narrow', sans-serif;
+      font-size: 2.4rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      margin-bottom: 25px;
       color: #fff;
       text-transform: uppercase;
+      display: inline-block;
+      transform: scaleY(1.7);
+      transform-origin: center;
     }
 
     #welcome-screen .sub-title {
@@ -70,7 +74,7 @@
       color: var(--text-muted);
       font-size: 0.95rem;
       line-height: 1.6;
-      margin: 0 auto 30px auto;
+      margin: 15px auto 30px auto;
       font-weight: 300;
       padding: 0 10px;
     }
@@ -148,7 +152,7 @@
       box-shadow: 0 0 20px rgba(201, 160, 80, 0.4);
     }
 
-    /* HEADER & TÍTULO MAIS ALTO (ESTICADO VERTICALMENTE) */
+    /* HEADER & TÍTULO PRINCIPAL DA EXPOSIÇÃO */
     header {
       padding: 50px 20px 20px;
       text-align: center;
@@ -163,14 +167,13 @@
       color: #ffffff;
       margin: 0;
       display: inline-block;
-      /* Deixa o título mais alto / esticado verticalmente */
       transform: scaleY(1.7);
       transform-origin: center;
     }
 
     header p {
       color: var(--accent-color);
-      margin-top: 25px; /* Espaço ajustado por conta do scaleY */
+      margin-top: 25px;
       font-size: 1.1rem;
       letter-spacing: 1px;
       font-weight: 300;
@@ -334,7 +337,7 @@
       color: var(--accent-color);
     }
 
-    /* RODAPÉ AJUSTADO (MAIS PRÓXIMO E EM BLOCOS HIERÁRQUICOS) */
+    /* RODAPÉ AJUSTADO */
     footer {
       position: relative;
       padding: 40px 20px 100px;
@@ -351,7 +354,6 @@
       gap: 12px;
     }
 
-    /* Bloco em Hierarquia: Amarelo em cima, Branco embaixo, centralizado */
     .footer-block {
       display: flex;
       flex-direction: column;
@@ -517,7 +519,6 @@
       padding-right: 5px;
     }
 
-    /* ORDEM DO COMENTÁRIO: TEXTO PRIMEIRO, NOME DEPOIS */
     .comment-item {
       background: #111;
       padding: 12px 14px;
@@ -629,7 +630,7 @@
 
   <main class="gallery-grid" id="gallery"></main>
 
-  <!-- RODAPÉ REESTRUTURADO EM BLOCOS HIERÁRQUICOS -->
+  <!-- RODAPÉ REESTRUTURADO -->
   <footer>
     <div class="footer-block">
       <span class="footer-title">O QUE VOCÊ NÃO VÊ</span>
@@ -659,7 +660,7 @@
     <audio id="bg-music" src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=piano-ambient-112199.mp3" loop preload="auto"></audio>
   </div>
 
-  <!-- LIGHTBOX COM COMENTÁRIOS CORRIGIDOS (TEXTO PRIMEIRO) -->
+  <!-- LIGHTBOX -->
   <div class="lightbox" id="lightbox" onclick="closeLightbox()">
     <span class="close-lightbox">&times;</span>
     <div class="lightbox-content" onclick="event.stopPropagation()">
@@ -825,7 +826,6 @@
         Object.values(data).forEach(c => {
           const item = document.createElement('div');
           item.className = 'comment-item';
-          // ORDEM CORRIGIDA: Texto primeiro, Autor logo abaixo
           item.innerHTML = `
             <div class="comment-text">${escapeHtml(c.text)}</div>
             <div class="comment-author">— ${escapeHtml(c.author)}</div>
