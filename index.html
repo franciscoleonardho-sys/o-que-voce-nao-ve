@@ -5,18 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>O que você não vê - Exposição Digital</title>
   <style>
-    /* RESET & ESTILO GALERIA / MUSEU */
+    /* RESET & DESIGN GALERIA */
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
     :root {
-      --bg-color: #0b0b0b;
-      --card-bg: #141414;
+      --bg-color: #080808;
+      --card-bg: #121212;
       --accent-color: #c9a050;
       --text-color: #ececec;
-      --text-muted: #9e9e9e;
+      --text-muted: #a0a0a0;
       --font-main: 'Helvetica Neue', Arial, sans-serif;
     }
 
@@ -27,14 +27,14 @@
       overflow-x: hidden;
     }
 
-    /* TELA DE ENTRADA / FICHA TÉCNICA */
+    /* TELA DE ENTRADA / APRESENTAÇÃO */
     #welcome-screen {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: linear-gradient(rgba(0,0,0,0.88), rgba(0,0,0,0.95)), url('https://raw.githubusercontent.com/franciscoleonardho-sys/o-que-voce-nao-ve/main/Janela%20no%20fim%20da%20tarde.jpg') center/cover;
+      background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.92)), url('https://raw.githubusercontent.com/franciscoleonardho-sys/o-que-voce-nao-ve/main/Janela%20no%20fim%20da%20tarde.jpg') center/cover no-repeat;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -52,9 +52,9 @@
     }
 
     #welcome-screen h1 {
-      font-size: 2.4rem;
+      font-size: 2.5rem;
       font-weight: 300;
-      letter-spacing: 4px;
+      letter-spacing: 5px;
       margin-bottom: 12px;
       color: #fff;
       text-transform: uppercase;
@@ -65,35 +65,38 @@
       color: var(--text-muted);
       font-size: 1.05rem;
       line-height: 1.6;
-      margin-bottom: 25px;
+      margin-bottom: 30px;
+      font-weight: 300;
     }
 
+    /* CONTAINER DA EQUIPE (SEM CAIXA RETANGULAR) */
     .team-container {
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-bottom: 25px;
-      background: rgba(20, 20, 20, 0.7);
-      padding: 20px 30px;
-      border-radius: 8px;
-      border: 1px solid #222;
+      margin-bottom: 30px;
+      background: transparent; /* Retirado o fundo cinza */
+      padding: 0;
+      border: none;
       max-width: 600px;
       width: 100%;
     }
 
     .team-photo {
-      width: 120px;
-      height: 120px;
+      width: 130px;
+      height: 130px;
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid var(--accent-color);
-      margin-bottom: 15px;
+      margin-bottom: 18px;
+      box-shadow: 0 0 25px rgba(201, 160, 80, 0.2);
     }
 
     .credits {
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       color: var(--text-color);
-      line-height: 1.7;
+      line-height: 1.8;
+      font-weight: 300;
     }
 
     .credits strong {
@@ -101,47 +104,74 @@
       font-weight: 400;
     }
 
+    /* ÁUDIO DE INTRODUÇÃO */
     .intro-audio-box {
-      margin-bottom: 25px;
+      margin-bottom: 30px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
     .intro-audio-box label {
       font-size: 0.85rem;
-      letter-spacing: 1px;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
       color: var(--accent-color);
     }
 
     .intro-audio-box audio {
-      height: 35px;
+      height: 40px;
       accent-color: var(--accent-color);
+      max-width: 320px;
+      width: 100%;
     }
 
     .btn-enter {
-      padding: 14px 40px;
+      padding: 15px 45px;
       background-color: transparent;
       border: 1px solid var(--accent-color);
       color: var(--accent-color);
       font-size: 0.95rem;
-      letter-spacing: 2px;
+      letter-spacing: 3px;
       text-transform: uppercase;
       cursor: pointer;
       transition: all 0.3s ease;
-      margin-top: 10px;
+      border-radius: 2px;
     }
 
     .btn-enter:hover {
       background-color: var(--accent-color);
       color: #000;
+      box-shadow: 0 0 20px rgba(201, 160, 80, 0.4);
     }
 
+    /* HEADER E BOTÃO DE MENU/SOBRE */
     header {
-      padding: 60px 20px 20px;
+      padding: 50px 20px 20px;
       text-align: center;
+      position: relative;
+    }
+
+    .btn-about {
+      position: absolute;
+      top: 20px;
+      right: 25px;
+      background: transparent;
+      border: 1px solid #333;
+      color: var(--text-muted);
+      padding: 8px 16px;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-about:hover {
+      border-color: var(--accent-color);
+      color: var(--accent-color);
     }
 
     header h2 {
@@ -164,7 +194,7 @@
       gap: 40px;
       max-width: 1100px;
       margin: 0 auto;
-      padding: 40px 20px 120px;
+      padding: 40px 20px 60px;
     }
 
     .photo-card {
@@ -173,14 +203,15 @@
       overflow: hidden;
       cursor: pointer;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      border: 1px solid #222;
+      border: 1px solid #1a1a1a;
       display: flex;
       flex-direction: column;
     }
 
     .photo-card:hover {
       transform: translateY(-6px);
-      box-shadow: 0 15px 30px rgba(0,0,0,0.7);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.8);
+      border-color: #333;
     }
 
     .photo-card img {
@@ -191,14 +222,14 @@
       background-color: #000;
     }
 
-    /* DESTAQUE CENTRALIZADO */
+    /* DESTAQUE CENTRALIZADO NA GRADE */
     .photo-card.highlight {
       grid-column: 1 / -1;
       max-width: 850px;
       width: 100%;
       margin: 30px auto;
       border: 1px solid var(--accent-color);
-      box-shadow: 0 0 35px rgba(201, 160, 80, 0.25);
+      box-shadow: 0 0 35px rgba(201, 160, 80, 0.2);
     }
 
     .photo-card.highlight img {
@@ -231,7 +262,27 @@
       font-weight: 300;
     }
 
-    /* PLAYER DE ÁUDIO */
+    /* RODAPÉ AUTORAL AO FINAL */
+    footer {
+      border-top: 1px solid #1a1a1a;
+      padding: 50px 20px 120px;
+      text-align: center;
+      background: #050505;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.8;
+    }
+
+    footer strong {
+      color: var(--accent-color);
+      font-weight: 400;
+    }
+
+    footer p {
+      margin-bottom: 6px;
+    }
+
+    /* PLAYER DE MÚSICA */
     .audio-player-container {
       position: fixed;
       bottom: 25px;
@@ -284,7 +335,7 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0,0,0,0.94);
+      background: rgba(0,0,0,0.95);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -349,13 +400,12 @@
 </head>
 <body>
 
-  <!-- TELA DE ENTRADA & FICHA TÉCNICA -->
+  <!-- TELA DE ENTRADA & APRESENTAÇÃO -->
   <div id="welcome-screen">
     <h1>O que você não vê</h1>
     <p class="sub-title">Uma experiência de pausa, observação e escuta. Coloque os fones para uma melhor imersão.</p>
 
     <div class="team-container">
-      <!-- FOTO DO AUTOR -->
       <img src="https://raw.githubusercontent.com/franciscoleonardho-sys/o-que-voce-nao-ve/main/Francisco%20Leonardo.jpeg" alt="Francisco Leonardo" class="team-photo">
       
       <div class="credits">
@@ -365,21 +415,30 @@
       </div>
     </div>
 
-    <!-- ÁUDIO DE INTRODUÇÃO (EM MP3) -->
+    <!-- ÁUDIO DE INTRODUÇÃO -->
     <div class="intro-audio-box">
       <label>🎧 Ouça a Introdução do Autor</label>
-      <audio controls src="https://raw.githubusercontent.com/franciscoleonardho-sys/o-que-voce-nao-ve/main/Introducao_do_autor.mp3"></audio>
+      <audio controls src="https://raw.githubusercontent.com/franciscoleonardho-sys/o-que-voce-nao-ve/main/Introducao_do_autor.mp3" onplay="playClickSound()"></audio>
     </div>
 
     <button class="btn-enter" onclick="enterExhibition()">Entrar na Exposição</button>
   </div>
 
   <header>
+    <button class="btn-about" onclick="openWelcomeScreen()">ⓘ Sobre / Início</button>
     <h2>O que você não vê</h2>
     <p>Pessoas, rastros e histórias comuns</p>
   </header>
 
   <main class="gallery-grid" id="gallery"></main>
+
+  <!-- RODAPÉ AUTORAL COM FICHA TÉCNICA -->
+  <footer>
+    <p><strong>O QUE VOCÊ NÃO VÊ</strong> — Exposição Digital Fotográfica & Sonora</p>
+    <p>Trabalho de Conclusão de Curso (TCC) em <strong>Rádio e TV</strong></p>
+    <p>Autor e Curadoria: <strong>Francisco Leonardo</strong> | Produção: Equipe do Projeto</p>
+    <p style="margin-top: 15px; font-size: 0.8rem; opacity: 0.6;">© Todos os direitos reservados aos autores e colaboradores.</p>
+  </footer>
 
   <!-- PLAYER DE MÚSICA DE FUNDO -->
   <div class="audio-player-container">
@@ -391,7 +450,7 @@
     <audio id="bg-music" onended="playNextTrack()"></audio>
   </div>
 
-  <!-- LIGHTBOX / EXPANSÃO DA IMAGEM -->
+  <!-- LIGHTBOX -->
   <div class="lightbox" id="lightbox" onclick="closeLightbox()">
     <span class="close-lightbox">&times;</span>
     <div class="lightbox-content" onclick="event.stopPropagation()">
@@ -405,6 +464,15 @@
 
   <script>
     const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQPvjhGZgcE7oZbDvbS8z7Zw4LeqBvRP6Qk7ppQPhfayl40_2fG21MgiNtVtoJNYsujOiEXtQ5W3SCw/pub?output=csv";
+
+    // SOM DE CLIQUE DE BOTÃO / INTERAÇÃO (SFX)
+    const clickSound = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_c31a7888b6.mp3?filename=click-button.mp3");
+    clickSound.volume = 0.3;
+
+    function playClickSound() {
+      clickSound.currentTime = 0;
+      clickSound.play().catch(() => {});
+    }
 
     const playlist = [
       "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=ambient-piano-amp-strings-10711.mp3",
@@ -445,7 +513,6 @@
         }
         row.push(entry.trim());
         if (row.length >= 4) {
-          // Lendo a Coluna F (índice 5) para Destaque
           const destaqueValor = row[5] ? row[5].replace(/^"|"$/g, '').trim().toLowerCase() : 'nao';
           
           result.push({
@@ -467,7 +534,10 @@
       items.forEach(item => {
         const card = document.createElement('div');
         card.className = `photo-card ${item.destaque ? 'highlight' : ''}`;
-        card.onclick = () => openLightbox(item.url, item.titulo, item.desc);
+        card.onclick = () => {
+          playClickSound();
+          openLightbox(item.url, item.titulo, item.desc);
+        };
         card.innerHTML = `
           <img src="${item.url}" alt="${item.titulo}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=500&auto=format&fit=crop'">
           <div class="photo-info">
@@ -491,11 +561,17 @@
     }
 
     function enterExhibition() {
+      playClickSound();
       document.getElementById('welcome-screen').classList.add('hidden');
       const music = document.getElementById('bg-music');
       music.play().then(() => {
         document.getElementById('play-pause-btn').innerText = '⏸';
-      }).catch(e => console.log("Áudio aguardando interação do usuário"));
+      }).catch(e => console.log("Áudio aguardando interação"));
+    }
+
+    function openWelcomeScreen() {
+      playClickSound();
+      document.getElementById('welcome-screen').classList.remove('hidden');
     }
 
     const music = document.getElementById('bg-music');
@@ -507,6 +583,7 @@
     };
 
     function toggleMusic() {
+      playClickSound();
       if (music.paused) {
         music.play();
         document.getElementById('play-pause-btn').innerText = '⏸';
@@ -536,6 +613,7 @@
     }
 
     function closeLightbox() {
+      playClickSound();
       document.getElementById('lightbox').classList.remove('active');
     }
 
