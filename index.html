@@ -31,7 +31,7 @@
       overflow-x: hidden;
     }
 
-    /* TELA DE ENTRADA - TÍTULO PADRONIZADO E ESTICADO */
+    /* TELA DE ENTRADA */
     #welcome-screen {
       position: fixed;
       top: 0;
@@ -74,7 +74,7 @@
       color: var(--text-muted);
       font-size: 0.95rem;
       line-height: 1.6;
-      margin: 15px auto 30px auto;
+      margin: 15px auto 25px auto;
       font-weight: 300;
       padding: 0 10px;
     }
@@ -98,20 +98,37 @@
       box-shadow: 0 0 25px rgba(201, 160, 80, 0.2);
     }
 
-    .credits {
-      font-size: 0.95rem;
-      color: var(--text-color);
-      line-height: 1.8;
-      font-weight: 300;
+    /* BLOCOS HIERÁRQUICOS DA TELA DE ENTRADA */
+    .credits-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 25px;
     }
 
-    .credits strong {
+    .credit-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .credit-title {
       color: var(--accent-color);
       font-weight: 400;
+      font-size: 0.95rem;
+      letter-spacing: 0.5px;
+    }
+
+    .credit-desc {
+      color: var(--text-color);
+      font-weight: 300;
+      font-size: 0.9rem;
     }
 
     .intro-audio-box {
-      margin-bottom: 30px;
+      margin-bottom: 25px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -358,7 +375,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 3px;
+      gap: 2px;
     }
 
     .footer-title {
@@ -606,10 +623,27 @@
     <div class="team-container">
       <img src="https://cdn.jsdelivr.net/gh/franciscoleonardho-sys/o-que-voce-nao-ve@main/Francisco%20Leonardo.jpeg" alt="Francisco Leonardo" class="team-photo">
       
-      <div class="credits">
-        <p><strong>Projeto de Conclusão de Curso:</strong> Rádio, TV e Internet</p>
-        <p><strong>Autor / Curadoria:</strong> Francisco Leonardo</p>
-        <p><strong>Fotografia & Produção:</strong> Equipe do Projeto</p>
+      <!-- CRÉDITOS DA TELA DE ENTRADA (EM BLOCOS HIERÁRQUICOS) -->
+      <div class="credits-group">
+        <div class="credit-block">
+          <span class="credit-title">Projeto Integrador</span>
+          <span class="credit-desc">O que você não vê</span>
+        </div>
+
+        <div class="credit-block">
+          <span class="credit-title">Curso</span>
+          <span class="credit-desc">Rádio, TV e Internet</span>
+        </div>
+
+        <div class="credit-block">
+          <span class="credit-title">Autor/Curadoria</span>
+          <span class="credit-desc">Francisco Leonardo | Chicão</span>
+        </div>
+
+        <div class="credit-block">
+          <span class="credit-title">Fotografia e Produção (edição)</span>
+          <span class="credit-desc">Francisco Leonardo | Chicão</span>
+        </div>
       </div>
     </div>
 
@@ -630,24 +664,33 @@
 
   <main class="gallery-grid" id="gallery"></main>
 
-  <!-- RODAPÉ REESTRUTURADO -->
+  <!-- RODAPÉ DA EXPOSIÇÃO -->
   <footer>
     <div class="footer-block">
-      <span class="footer-title">O QUE VOCÊ NÃO VÊ</span>
-      <span class="footer-desc">Exposição Digital Fotográfica & Sonora</span>
+      <span class="footer-title">Projeto Integrador</span>
+      <span class="footer-desc">O que você não vê</span>
     </div>
     
     <div class="footer-block">
-      <span class="footer-title">Trabalho de Conclusão de Curso (TCC)</span>
+      <span class="footer-title">Curso</span>
       <span class="footer-desc">Rádio, TV e Internet</span>
     </div>
 
     <div class="footer-block">
-      <span class="footer-title">Autor e Curadoria</span>
-      <span class="footer-desc">Francisco Leonardo | Produção: Equipe do Projeto</span>
+      <span class="footer-title">Autor/Curadoria</span>
+      <span class="footer-desc">Francisco Leonardo | Chicão</span>
     </div>
 
-    <p style="margin-top: 10px; font-size: 0.75rem; opacity: 0.4;">© Todos os direitos reservados aos autores e colaboradores.</p>
+    <div class="footer-block">
+      <span class="footer-title">Fotografia e Produção (edição)</span>
+      <span class="footer-desc">Francisco Leonardo | Chicão</span>
+    </div>
+
+    <div class="footer-block" style="margin-top: 5px;">
+      <span class="footer-desc" style="font-size: 0.85rem; opacity: 0.7;">2027.2</span>
+    </div>
+
+    <p style="margin-top: 8px; font-size: 0.75rem; opacity: 0.4;">© Todos os direitos reservados aos autores e colaboradores.</p>
   </footer>
 
   <!-- PLAYER DE MÚSICA -->
