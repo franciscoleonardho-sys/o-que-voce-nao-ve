@@ -69,13 +69,12 @@
       font-weight: 300;
     }
 
-    /* CONTAINER DA EQUIPE (SEM CAIXA RETANGULAR) */
     .team-container {
       display: flex;
       flex-direction: column;
       align-items: center;
       margin-bottom: 30px;
-      background: transparent; /* Retirado o fundo cinza */
+      background: transparent;
       padding: 0;
       border: none;
       max-width: 600px;
@@ -146,7 +145,7 @@
       box-shadow: 0 0 20px rgba(201, 160, 80, 0.4);
     }
 
-    /* HEADER E BOTÃO DE MENU/SOBRE */
+    /* HEADER E BOTÃO INÍCIO CLEAN */
     header {
       padding: 50px 20px 20px;
       text-align: center;
@@ -155,14 +154,14 @@
 
     .btn-about {
       position: absolute;
-      top: 20px;
+      top: 25px;
       right: 25px;
       background: transparent;
       border: 1px solid #333;
       color: var(--text-muted);
-      padding: 8px 16px;
-      font-size: 0.8rem;
-      letter-spacing: 1px;
+      padding: 8px 20px;
+      font-size: 0.75rem;
+      letter-spacing: 2px;
       text-transform: uppercase;
       cursor: pointer;
       border-radius: 20px;
@@ -262,7 +261,7 @@
       font-weight: 300;
     }
 
-    /* RODAPÉ AUTORAL AO FINAL */
+    /* RODAPÉ AUTORAL */
     footer {
       border-top: 1px solid #1a1a1a;
       padding: 50px 20px 120px;
@@ -418,21 +417,21 @@
     <!-- ÁUDIO DE INTRODUÇÃO -->
     <div class="intro-audio-box">
       <label>🎧 Ouça a Introdução do Autor</label>
-      <audio controls src="https://raw.githubusercontent.com/franciscoleonardho-sys/o-que-voce-nao-ve/main/Introducao_do_autor.mp3" onplay="playClickSound()"></audio>
+      <audio controls preload="auto" src="https://raw.githubusercontent.com/franciscoleonardho-sys/o-que-voce-nao-ve/main/Introducao_do_autor.MP3" onplay="playClickSound()"></audio>
     </div>
 
     <button class="btn-enter" onclick="enterExhibition()">Entrar na Exposição</button>
   </div>
 
   <header>
-    <button class="btn-about" onclick="openWelcomeScreen()">ⓘ Sobre / Início</button>
+    <button class="btn-about" onclick="openWelcomeScreen()">Início</button>
     <h2>O que você não vê</h2>
     <p>Pessoas, rastros e histórias comuns</p>
   </header>
 
   <main class="gallery-grid" id="gallery"></main>
 
-  <!-- RODAPÉ AUTORAL COM FICHA TÉCNICA -->
+  <!-- RODAPÉ AUTORAL -->
   <footer>
     <p><strong>O QUE VOCÊ NÃO VÊ</strong> — Exposição Digital Fotográfica & Sonora</p>
     <p>Trabalho de Conclusão de Curso (TCC) em <strong>Rádio e TV</strong></p>
@@ -446,8 +445,8 @@
     <div class="progress-bar" onclick="seekMusic(event)">
       <div class="progress-fill" id="music-progress"></div>
     </div>
-    <input type="range" class="volume-control" min="0" max="1" step="0.05" value="0.5" onchange="setVolume(this.value)">
-    <audio id="bg-music" onended="playNextTrack()"></audio>
+    <input type="range" id="vol-slider" class="volume-control" min="0" max="1" step="0.05" value="0.5" onchange="setVolume(this.value)">
+    <audio id="bg-music"></audio>
   </div>
 
   <!-- LIGHTBOX -->
@@ -465,7 +464,7 @@
   <script>
     const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQPvjhGZgcE7oZbDvbS8z7Zw4LeqBvRP6Qk7ppQPhfayl40_2fG21MgiNtVtoJNYsujOiEXtQ5W3SCw/pub?output=csv";
 
-    // SOM DE CLIQUE DE BOTÃO / INTERAÇÃO (SFX)
+    // SOM DE CLIQUE SUAVE
     const clickSound = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_c31a7888b6.mp3?filename=click-button.mp3");
     clickSound.volume = 0.3;
 
@@ -474,24 +473,66 @@
       clickSound.play().catch(() => {});
     }
 
+    // PLAYLIST DE 5 MÚSICAS AMBIENTAIS / INSTRUMENTAIS
     const playlist = [
       "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=ambient-piano-amp-strings-10711.mp3",
       "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a8c1e2.mp3?filename=ambient-relaxation.mp3",
-      "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=soft-piano-background.mp3"
+      "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=soft-piano-background.mp3",
+      "https://cdn.pixabay.com/download/audio/2021/11/25/audio_94fa22a106.mp3?filename=deep-ambient.mp3",
+      "https://cdn.pixabay.com/download/audio/2022/02/07/audio_13a303dd50.mp3?filename=meditation-ambient-piano.mp3"
     ];
     let currentTrackIndex = 0;
+    let targetVolume = 0.5;
+    let isFading = false;
+
+    const music = document.getElementById('bg-music');
 
     function initAudioTrack() {
-      const music = document.getElementById('bg-music');
       music.src = playlist[currentTrackIndex];
+      music.volume = targetVolume;
     }
 
-    function playNextTrack() {
-      currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
-      const music = document.getElementById('bg-music');
-      music.src = playlist[currentTrackIndex];
-      music.play();
+    // TRANSIÇÃO SUAVE (CROSSFADE/FADE OUT & IN)
+    function smoothTransitionToNextTrack() {
+      if (isFading) return;
+      isFading = true;
+
+      let fadeOutInterval = setInterval(() => {
+        if (music.volume > 0.05) {
+          music.volume -= 0.05;
+        } else {
+          clearInterval(fadeOutInterval);
+          
+          // Avança para a próxima música (E volta para a 1ª no final do ciclo)
+          currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+          music.src = playlist[currentTrackIndex];
+          music.play();
+
+          let fadeInInterval = setInterval(() => {
+            if (music.volume < targetVolume - 0.05) {
+              music.volume += 0.05;
+            } else {
+              music.volume = targetVolume;
+              clearInterval(fadeInInterval);
+              isFading = false;
+            }
+          }, 200);
+        }
+      }, 200);
     }
+
+    // MONITORAMENTO DO TEMPO DA MÚSICA PARA Fazer FADE NO FINAL
+    music.ontimeupdate = () => {
+      if (music.duration) {
+        const pct = (music.currentTime / music.duration) * 100;
+        document.getElementById('music-progress').style.width = pct + '%';
+
+        // Inicia transição suave quando faltarem 4 segundos para acabar a faixa
+        if (music.duration - music.currentTime <= 4 && !isFading) {
+          smoothTransitionToNextTrack();
+        }
+      }
+    };
 
     function parseCSV(text) {
       const lines = text.split(/\r\n|\n/);
@@ -563,7 +604,6 @@
     function enterExhibition() {
       playClickSound();
       document.getElementById('welcome-screen').classList.add('hidden');
-      const music = document.getElementById('bg-music');
       music.play().then(() => {
         document.getElementById('play-pause-btn').innerText = '⏸';
       }).catch(e => console.log("Áudio aguardando interação"));
@@ -573,14 +613,6 @@
       playClickSound();
       document.getElementById('welcome-screen').classList.remove('hidden');
     }
-
-    const music = document.getElementById('bg-music');
-    music.ontimeupdate = () => {
-      if (music.duration) {
-        const pct = (music.currentTime / music.duration) * 100;
-        document.getElementById('music-progress').style.width = pct + '%';
-      }
-    };
 
     function toggleMusic() {
       playClickSound();
@@ -594,7 +626,8 @@
     }
 
     function setVolume(val) {
-      music.volume = val;
+      targetVolume = parseFloat(val);
+      music.volume = targetVolume;
     }
 
     function seekMusic(e) {
