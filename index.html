@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>O que você não vê - Exposição Digital</title>
+  <style>
+    /* RESET & ESTILO GALERIA / MUSEU */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    :root {
+      --bg-color: #0b0b0b;
+      --card-bg: #141414;
+      --accent-color: #c9a050;
+      --text-color: #ececec;
+      --text-muted: #9e9e9e;
+      --font-main: 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: var(--font-main);
+      overflow-x: hidden;
+    }
+
+    /* 1. TELA DE ENTRADA / RECEPÇÃO */
+    #welcome-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.95)), url('https://picsum.photos/id/1043/1920/1080?grayscale') center/cover;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      z-index: 1000;
+      transition: opacity 0.8s ease, visibility 0.8s;
+    }
+
+    #welcome-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    #welcome-screen h1 {
+      font-size: 2.2rem;
+      font-weight: 300;
+      letter-spacing: 3px;
+      margin-bottom: 15px;
+      color: #fff;
+      text-transform: uppercase;
+    }
+
+    #welcome-screen p {
+      max-width: 550px;
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      line-height: 1.6;
+      margin-bottom: 35px;
+    }
+
+    .btn-enter {
+      padding: 14px 38px;
+      background-color: transparent;
+      border: 1px solid var(--accent-color);
+      color: var(--accent-color);
+      font-size: 0.95rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-enter:hover {
+      background-color: var(--accent-color);
+      color: #000;
+    }
+
+    /* HEADER DA GALERIA */
+    header {
+      padding: 60px 20px 20px;
+      text-align: center;
+    }
+
+    header h2 {
+      font-size: 1.8rem;
+      font-weight: 300;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+
+    header p {
+      color: var(--text-muted);
+      margin-top: 8px;
+      font-size: 0.95rem;
+    }
+
+    /* 2. GRADE DA GALERIA */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 20px 120px;
+    }
+
+    .photo-card {
+      background: var(--card-bg);
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid #222;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .photo-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.7);
+    }
+
+    .photo-card img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      display: block;
+      background-color: #000;
+    }
+
+    .photo-info {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .photo-title {
+      font-size: 1.15rem;
+      font-weight: 400;
+      margin-bottom: 10px;
+      color: var(--accent-color);
+    }
+
+    .photo-desc {
+      font-size: 0.95rem;
+      color: var(--text-color);
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    /* 3. PLAYER DE ÁUDIO AMBIENTE */
+    .audio-player-container {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: rgba(18, 18, 18, 0.92);
+      backdrop-filter: blur(12px);
+      border: 1px solid #333;
+      border-radius: 40px;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      z-index: 500;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+
+    .player-btn {
+      background: none;
+      border: none;
+      color: var(--accent-color);
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .progress-bar {
+      width: 90px;
+      height: 4px;
+      background: #333;
+      border-radius: 2px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      background: var(--accent-color);
+      border-radius: 2px;
+    }
+
+    .volume-control {
+      width: 55px;
+      accent-color: var(--accent-color);
+    }
+
+    /* 4. MODAL / LIGHTBOX (AMPLIAÇÃO) */
+    .lightbox {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.94);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      padding: 20px;
+    }
+
+    .lightbox.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .lightbox-content {
+      max-width: 900px;
+      width: 100%;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .lightbox-img {
+      max-width: 100%;
+      max-height: 65vh;
+      object-fit: contain;
+      box-shadow: 0 0 30px rgba(0,0,0,0.9);
+    }
+
+    .lightbox-caption {
+      margin-top: 20px;
+      text-align: center;
+      max-width: 650px;
+    }
+
+    .lightbox-caption h3 {
+      font-size: 1.3rem;
+      color: var(--accent-color);
+      margin-bottom: 8px;
+      font-weight: 300;
+    }
+
+    .lightbox-caption p {
+      font-size: 1rem;
+      color: var(--text-color);
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    .close-lightbox {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      color: #fff;
+      font-size: 2.5rem;
+      cursor: pointer;
+      font-weight: 300;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TELA DE ENTRADA -->
+  <div id="welcome-screen">
+    <h1>O que você não vê</h1>
+    <p>Uma experiência de pausa, observação e escuta. Coloque os fones para uma melhor imersão.</p>
+    <button class="btn-enter" onclick="enterExhibition()">Entrar na Exposição</button>
+  </div>
+
+  <header>
+    <h2>O que você não vê</h2>
+    <p>Pessoas, rastros e histórias comuns</p>
+  </header>
+
+  <!-- GALERIA -->
+  <main class="gallery-grid" id="gallery"></main>
+
+  <!-- PLAYER DE ÁUDIO -->
+  <div class="audio-player-container">
+    <button class="player-btn" id="play-pause-btn" onclick="toggleMusic()">▶</button>
+    <div class="progress-bar" onclick="seekMusic(event)">
+      <div class="progress-fill" id="music-progress"></div>
+    </div>
+    <input type="range" class="volume-control" min="0" max="1" step="0.05" value="0.5" onchange="setVolume(this.value)">
+    <audio id="bg-music" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <span class="close-lightbox">&times;</span>
+    <div class="lightbox-content" onclick="event.stopPropagation()">
+      <img id="lightbox-img" src="" alt="">
+      <div class="lightbox-caption">
+        <h3 id="lightbox-title"></h3>
+        <p id="lightbox-desc"></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Link direto da sua planilha pública
+    const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQPvjhGZgcE7oZbDvbS8z7Zw4LeqBvRP6Qk7ppQPhfayl40_2fG21MgiNtVtoJNYsujOiEXtQ5W3SCw/pub?output=csv";
+
+    // Converte links do Google Drive para links diretos de imagem
+    function formatDriveUrl(url) {
+      if (!url) return '';
+      if (url.includes('drive.google.com') && url.includes('/d/')) {
+        const match = url.match(/\/d\/([^\/]+)/);
+        if (match && match[1]) {
+          return `https://lh3.googleusercontent.com/d/${match[1]}`;
+        }
+      }
+      return url;
+    }
+
+    // Processa o texto CSV respeitando aspas e vírgulas
+    function parseCSV(text) {
+      const lines = text.split(/\r\n|\n/);
+      const result = [];
+      for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        const row = [];
+        let insideQuotes = false;
+        let entry = '';
+        for (let char of lines[i]) {
+          if (char === '"') {
+            insideQuotes = !insideQuotes;
+          } else if (char === ',' && !insideQuotes) {
+            row.push(entry.trim());
+            entry = '';
+          } else {
+            entry += char;
+          }
+        }
+        row.push(entry.trim());
+        if (row.length >= 4) {
+          result.push({
+            ordem: row[0],
+            titulo: row[1].replace(/^"|"$/g, ''),
+            url: formatDriveUrl(row[2].replace(/^"|"$/g, '')),
+            desc: row[3].replace(/^"|"$/g, '')
+          });
+        }
+      }
+      return result;
+    }
+
+    // Renderiza os cards na tela
+    function renderGallery(items) {
+      const gallery = document.getElementById('gallery');
+      gallery.innerHTML = '';
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'photo-card';
+        card.onclick = () => openLightbox(item.url, item.titulo, item.desc);
+        card.innerHTML = `
+          <img src="${item.url}" alt="${item.titulo}" loading="lazy" onerror="this.src='https://via.placeholder.com/600x400?text=Imagem+Indisponivel'">
+          <div class="photo-info">
+            <div class="photo-title">${item.titulo}</div>
+            <div class="photo-desc">${item.desc}</div>
+          </div>
+        `;
+        gallery.appendChild(card);
+      });
+    }
+
+    // Busca os dados da planilha
+    async function fetchFromSheets() {
+      try {
+        const response = await fetch(GOOGLE_SHEETS_CSV_URL);
+        const csvText = await response.text();
+        const items = parseCSV(csvText);
+        renderGallery(items);
+      } catch (err) {
+        console.error("Erro ao carregar a planilha:", err);
+      }
+    }
+
+    // Entrar na exposição
+    function enterExhibition() {
+      document.getElementById('welcome-screen').classList.add('hidden');
+      const music = document.getElementById('bg-music');
+      music.play();
+      document.getElementById('play-pause-btn').innerText = '⏸';
+    }
+
+    // Áudio / Player
+    const music = document.getElementById('bg-music');
+    music.ontimeupdate = () => {
+      const pct = (music.currentTime / music.duration) * 100;
+      document.getElementById('music-progress').style.width = pct + '%';
+    };
+
+    function toggleMusic() {
+      if (music.paused) {
+        music.play();
+        document.getElementById('play-pause-btn').innerText = '⏸';
+      } else {
+        music.pause();
+        document.getElementById('play-pause-btn').innerText = '▶';
+      }
+    }
+
+    function setVolume(val) {
+      music.volume = val;
+    }
+
+    function seekMusic(e) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const pos = (e.clientX - rect.left) / rect.width;
+      music.currentTime = pos * music.duration;
+    }
+
+    // Lightbox / Ampliação
+    function openLightbox(url, title, desc) {
+      document.getElementById('lightbox-img').src = url;
+      document.getElementById('lightbox-title').innerText = title;
+      document.getElementById('lightbox-desc').innerText = desc;
+      document.getElementById('lightbox').classList.add('active');
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('active');
+    }
+
+    fetchFromSheets();
+  </script>
+</body>
+</html>
