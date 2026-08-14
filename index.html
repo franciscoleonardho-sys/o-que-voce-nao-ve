@@ -103,7 +103,7 @@
       font-weight: 400;
     }
 
-    /* ÁUDIO DE INTRODUÇÃO */
+    /* ÁUDIO DE INTRODUÇÃO DO AUTOR */
     .intro-audio-box {
       margin-bottom: 30px;
       display: flex;
@@ -264,16 +264,26 @@
       font-weight: 300;
     }
 
-    /* RODAPÉ AUTORAL REESTILIZADO (TOM DE COR DIFERENTE E DESTAQUE) */
+    /* RODAPÉ AUTORAL - TRANSIÇÃO FOSCA E SUBTIL */
     footer {
-      border-top: 1px solid var(--accent-color);
-      padding: 60px 20px 120px;
+      position: relative;
+      padding: 70px 20px 120px;
       text-align: center;
-      background: #111112;
+      background: linear-gradient(180deg, rgba(8,8,8,1) 0%, rgba(15,15,18,1) 100%);
       color: var(--text-muted);
       font-size: 0.9rem;
       line-height: 1.8;
-      box-shadow: inset 0 10px 20px rgba(0,0,0,0.5);
+      box-shadow: inset 0 20px 30px -15px rgba(255, 255, 255, 0.03);
+    }
+
+    footer::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 10%;
+      width: 80%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
     }
 
     footer strong {
@@ -421,10 +431,10 @@
       </div>
     </div>
 
-    <!-- ÁUDIO DE INTRODUÇÃO DO AUTOR -->
+    <!-- ÁUDIO DE INTRODUÇÃO DO AUTOR - LINK BRUTO GARANTIDO -->
     <div class="intro-audio-box">
       <label>🎧 Ouça a Introdução do Autor</label>
-      <audio id="author-audio" controls preload="auto" src="https://cdn.jsdelivr.net/gh/franciscoleonardho-sys/o-que-voce-nao-ve@main/Introducao_do_autor.MP3" onerror="handleAudioError(this)" onplay="playClickSound()"></audio>
+      <audio id="author-audio" controls preload="auto" src="https://raw.githubusercontent.com/franciscoleonardho-sys/o-que-voce-nao-ve/main/Introducao_do_autor.MP3" onplay="playClickSound()"></audio>
     </div>
 
     <button class="btn-enter" onclick="enterExhibition()">Entrar na Exposição</button>
@@ -442,7 +452,7 @@
     <p><strong>O QUE VOCÊ NÃO VÊ</strong> — Exposição Digital Fotográfica & Sonora</p>
     <p>Trabalho de Conclusão de Curso (TCC) em <strong>Rádio e TV</strong></p>
     <p>Autor e Curadoria: <strong>Francisco Leonardo</strong> | Produção: Equipe do Projeto</p>
-    <p style="margin-top: 15px; font-size: 0.8rem; opacity: 0.5;">© Todos os direitos reservados aos autores e colaboradores.</p>
+    <p style="margin-top: 15px; font-size: 0.8rem; opacity: 0.4;">© Todos os direitos reservados aos autores e colaboradores.</p>
   </footer>
 
   <!-- PLAYER DE MÚSICA DE FUNDO -->
@@ -479,13 +489,7 @@
       clickSound.play().catch(() => {});
     }
 
-    // FALLBACK DE ÁUDIO CASO O LINK PRIMÁRIO FLOPPE NO NAVEGADOR
-    function handleAudioError(elem) {
-      console.warn("Alternando rota do áudio do autor...");
-      elem.src = "https://raw.githubusercontent.com/franciscoleonardho-sys/o-que-voce-nao-ve/main/Introducao_do_autor.MP3";
-    }
-
-    // PLAYLIST DE 5 MÚSICAS AMBIENTAIS
+    // PLAYLIST COM 5 MÚSICAS EM LOOP CONTINUO
     const playlist = [
       "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=ambient-piano-amp-strings-10711.mp3",
       "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a8c1e2.mp3?filename=ambient-relaxation.mp3",
@@ -495,21 +499,19 @@
     ];
 
     let currentTrackIndex = 0;
-    let targetVolume = 0.5;
-
     const music = document.getElementById('bg-music');
 
-    function initAudioTrack() {
-      music.src = playlist[currentTrackIndex];
-      music.volume = targetVolume;
+    function loadTrack(index) {
+      music.src = playlist[index];
+      music.load();
     }
 
-    // AVANÇAR PARA A PRÓXIMA MÚSICA QUANDO UMA TERMINA
-    music.onended = () => {
+    // LISTENER QUE MUTA DE MÚSICA AUTOMATICAMENTE
+    music.addEventListener('ended', function() {
       currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
-      music.src = playlist[currentTrackIndex];
-      music.play().catch(e => console.log("Aguardando ação do usuário"));
-    };
+      loadTrack(currentTrackIndex);
+      music.play();
+    });
 
     music.ontimeupdate = () => {
       if (music.duration) {
@@ -589,13 +591,12 @@
       playClickSound();
       document.getElementById('welcome-screen').classList.add('hidden');
       
-      // Pausa o áudio do autor se ele ainda estiver tocando
       const authorAudio = document.getElementById('author-audio');
       if (authorAudio) authorAudio.pause();
 
       music.play().then(() => {
         document.getElementById('play-pause-btn').innerText = '⏸';
-      }).catch(e => console.log("Aguardando interação do usuário"));
+      }).catch(e => console.log("Aguardando ação do usuário para áudio"));
     }
 
     function openWelcomeScreen() {
@@ -615,8 +616,7 @@
     }
 
     function setVolume(val) {
-      targetVolume = parseFloat(val);
-      music.volume = targetVolume;
+      music.volume = parseFloat(val);
     }
 
     function seekMusic(e) {
@@ -639,7 +639,7 @@
       document.getElementById('lightbox').classList.remove('active');
     }
 
-    initAudioTrack();
+    loadTrack(currentTrackIndex);
     fetchFromSheets();
   </script>
 </body>
