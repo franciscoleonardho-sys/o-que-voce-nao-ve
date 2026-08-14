@@ -3,937 +3,354 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>O que você não vê - Exposição Digital</title>
-  
-  <!-- SDK do Firebase (Versão Compatível Web) -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
+  <title>Galeria com Áudio</title>
   <style>
-    /* RESET & DESIGN GALERIA */
+    /* RESET & BASE */
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      -webkit-tap-highlight-color: transparent;
     }
-    :root {
-      --bg-color: #080808;
-      --card-bg: #121212;
-      --accent-color: #c9a050;
-      --text-color: #ececec;
-      --text-muted: #a0a0a0;
-      --font-main: 'Helvetica Neue', Arial, sans-serif;
+
+    /* Reset para padronizar controles no iOS / Safari */
+    button, input, select, textarea {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      border-radius: 0;
+      outline: none;
+      background: none;
+      border: none;
     }
 
     body {
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      font-family: var(--font-main);
-      overflow-x: hidden;
+      background-color: #0b0b0b;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      padding-bottom: 90px;
     }
 
-    /* TELA DE ENTRADA / APRESENTAÇÃO CORRIGIDA PARA CELULAR */
-    #welcome-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      height: 100dvh; /* Garante altura perfeita considerando a barra do navegador mobile */
-      background: linear-gradient(rgba(0,0,0,0.88), rgba(0,0,0,0.94)), url('https://cdn.jsdelivr.net/gh/franciscoleonardho-sys/o-que-voce-nao-ve@main/Janela%20no%20fim%20da%20tarde.jpg') center/cover no-repeat;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start; /* Alinhamento ao topo para suportar rolagem */
-      text-align: center;
-      padding: 40px 20px 60px 20px;
-      z-index: 1000;
-      overflow-y: auto; /* Permite rolar a tela se o conteúdo for maior que o visor */
-      -webkit-overflow-scrolling: touch; /* Rolagem suave no iOS */
-      transition: opacity 0.8s ease, visibility 0.8s;
+    /* BOTÃO INÍCIO */
+    .top-nav {
+      padding: 20px;
     }
 
-    #welcome-screen.hidden {
-      opacity: 0;
-      visibility: hidden;
-    }
-
-    #welcome-screen h1 {
-      font-size: 2.2rem;
-      font-weight: 300;
-      letter-spacing: 5px;
-      margin-top: auto; /* Centraliza verticalmente se houver espaço */
-      margin-bottom: 15px;
-      color: #fff;
-      text-transform: uppercase;
-    }
-
-    #welcome-screen .sub-title {
-      max-width: 480px;
-      width: 90%;
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      line-height: 1.6;
-      margin: 0 auto 25px auto;
-      font-weight: 300;
-      padding: 0 10px;
-    }
-
-    .team-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 25px;
-      background: transparent;
-      padding: 0;
-      border: none;
-      max-width: 500px;
-      width: 100%;
-    }
-
-    .team-photo {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid var(--accent-color);
-      margin-bottom: 15px;
-      box-shadow: 0 0 25px rgba(201, 160, 80, 0.2);
-    }
-
-    .credits {
-      font-size: 0.95rem;
-      color: var(--text-color);
-      line-height: 1.8;
-      font-weight: 300;
-    }
-
-    .credits strong {
-      color: var(--accent-color);
-      font-weight: 400;
-    }
-
-    .intro-audio-box {
-      margin-bottom: 30px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      width: 100%;
-      max-width: 320px;
-    }
-
-    .intro-audio-box label {
-      font-size: 0.8rem;
+    .btn-inicio {
+      display: inline-block;
+      padding: 8px 20px;
+      border: 1px solid #d4af37;
+      border-radius: 20px;
+      color: #d4af37;
+      text-decoration: none;
+      font-size: 12px;
       letter-spacing: 1.5px;
       text-transform: uppercase;
-      color: var(--accent-color);
+      background: rgba(0, 0, 0, 0.4);
     }
 
-    .intro-audio-box audio {
-      height: 40px;
-      accent-color: var(--accent-color);
-      width: 100%;
-    }
-
-    .btn-enter {
-      padding: 14px 40px;
-      background-color: transparent;
-      border: 1px solid var(--accent-color);
-      color: var(--accent-color);
-      font-size: 0.9rem;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      border-radius: 2px;
-      margin-bottom: auto; /* Garante margem final ao rolar */
-      flex-shrink: 0;
-    }
-
-    .btn-enter:hover {
-      background-color: var(--accent-color);
-      color: #000;
-      box-shadow: 0 0 20px rgba(201, 160, 80, 0.4);
-    }
-
-    /* HEADER */
-    header {
-      padding: 50px 20px 20px;
-      text-align: center;
-    }
-
-    .btn-floating-home {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      background: rgba(18, 18, 18, 0.85);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(201, 160, 80, 0.4);
-      color: var(--accent-color);
-      padding: 10px 22px;
-      font-size: 0.75rem;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      cursor: pointer;
-      border-radius: 25px;
-      transition: all 0.3s ease;
-      z-index: 600;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    }
-
-    .btn-floating-home:hover {
-      background: var(--accent-color);
-      color: #000;
-      box-shadow: 0 0 20px rgba(201, 160, 80, 0.5);
-    }
-
-    header h2 {
-      font-size: 1.8rem;
-      font-weight: 300;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-    }
-
-    header p {
-      color: var(--text-muted);
-      margin-top: 8px;
-      font-size: 0.95rem;
-    }
-
-    /* GRADE DA GALERIA */
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 40px;
-      max-width: 1100px;
+    /* CONTAINER DA GALERIA */
+    .gallery-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 0 20px;
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 40px 20px 60px;
     }
 
-    .photo-card {
-      background: var(--card-bg);
-      border-radius: 4px;
+    .card {
+      background-color: #141414;
+      border-radius: 8px;
       overflow: hidden;
-      cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      border: 1px solid #1a1a1a;
+      flex: 1 1 300px;
       display: flex;
       flex-direction: column;
-      position: relative;
+      border: 1px solid #222;
     }
 
-    .photo-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 15px 30px rgba(0,0,0,0.8);
-      border-color: #333;
-    }
-
-    .photo-card img {
+    .card-img {
       width: 100%;
-      height: 300px;
+      height: 220px;
       object-fit: cover;
       display: block;
-      background-color: #000;
     }
 
-    .photo-card.highlight {
-      grid-column: 1 / -1;
-      max-width: 850px;
-      width: 100%;
-      margin: 30px auto;
-      border: 1px solid var(--accent-color);
-      box-shadow: 0 0 35px rgba(201, 160, 80, 0.2);
-    }
-
-    .photo-card.highlight img {
-      height: 500px;
-      object-fit: cover;
-    }
-
-    .photo-info {
-      padding: 22px;
+    .card-content {
+      padding: 20px;
       display: flex;
       flex-direction: column;
       flex-grow: 1;
     }
 
-    .photo-title {
-      font-size: 1.15rem;
-      font-weight: 400;
-      margin-bottom: 10px;
-      color: var(--accent-color);
+    .card-title {
+      color: #d4af37;
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 12px;
     }
 
-    .photo-card.highlight .photo-title {
-      font-size: 1.4rem;
+    .card-desc {
+      color: #cccccc;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+      flex-grow: 1;
     }
 
-    .photo-desc {
-      font-size: 0.95rem;
-      color: var(--text-color);
-      line-height: 1.6;
-      font-weight: 300;
-      margin-bottom: 15px;
-    }
-
-    /* AÇÕES DO CARD */
-    .card-actions {
+    .card-footer {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      border-top: 1px solid rgba(255,255,255,0.05);
+      align-items: center;
       padding-top: 12px;
-      margin-top: auto;
+      border-top: 1px solid #222;
     }
 
-    .btn-like {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
+    .like-btn {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 0.9rem;
-      transition: color 0.3s ease;
+      gap: 6px;
+      background: none;
+      border: none;
+      color: #ffffff;
+      cursor: pointer;
+      font-size: 14px;
     }
 
+    /* CORAÇÃO VAZADO / BRANCO (Padrão) */
     .heart-icon {
       width: 18px;
       height: 18px;
-      fill: transparent;
-      stroke: #ffffff;
+      fill: transparent !important;
+      stroke: #ffffff !important;
       stroke-width: 2;
       transition: all 0.3s ease;
     }
 
-    .btn-like:hover .heart-icon {
-      stroke: var(--accent-color);
-      transform: scale(1.1);
+    /* CORAÇÃO PREENCHIDO AO CURTIR */
+    .like-btn.liked .heart-icon {
+      fill: #ff4d4d !important;
+      stroke: #ff4d4d !important;
     }
 
-    .btn-like.liked {
-      color: var(--accent-color);
+    .comment-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #888888;
+      font-size: 14px;
+      text-decoration: none;
+      cursor: pointer;
     }
 
-    .btn-like.liked .heart-icon {
-      fill: var(--accent-color);
-      stroke: var(--accent-color);
+    .comment-icon {
+      width: 16px;
+      height: 16px;
+      fill: #888888;
     }
 
-    /* RODAPÉ FOSCO */
-    footer {
-      position: relative;
-      padding: 80px 20px 120px;
-      text-align: center;
-      background: linear-gradient(180deg, rgba(8,8,8,0) 0%, rgba(18,18,22,0.95) 100%);
-      backdrop-filter: blur(12px);
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      line-height: 1.8;
-      margin-top: 40px;
-    }
-
-    footer strong {
-      color: var(--accent-color);
-      font-weight: 400;
-    }
-
-    footer p {
-      margin-bottom: 8px;
-    }
-
-    /* PLAYER DE MÚSICA DE FUNDO */
+    /* PLAYER DE ÁUDIO PADRONIZADO */
     .audio-player-container {
       position: fixed;
-      bottom: 25px;
-      right: 25px;
-      background: rgba(18, 18, 18, 0.92);
-      backdrop-filter: blur(12px);
-      border: 1px solid #333;
-      border-radius: 40px;
-      padding: 12px 24px;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      z-index: 500;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
     }
 
-    .player-btn {
+    .audio-player {
+      background-color: rgba(20, 20, 20, 0.95);
+      border: 1px solid #333333;
+      border-radius: 30px;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(10px);
+    }
+
+    .play-pause-btn {
       background: none;
       border: none;
-      color: var(--accent-color);
-      font-size: 1.2rem;
+      color: #d4af37;
       cursor: pointer;
-    }
-
-    .progress-bar {
-      width: 90px;
-      height: 4px;
-      background: #333;
-      border-radius: 2px;
-      position: relative;
-      cursor: pointer;
-    }
-
-    .progress-fill {
-      width: 0%;
-      height: 100%;
-      background: var(--accent-color);
-      border-radius: 2px;
-    }
-
-    .volume-control {
-      width: 55px;
-      accent-color: var(--accent-color);
-    }
-
-    /* LIGHTBOX COM INTERAÇÃO */
-    .lightbox {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0,0,0,0.96);
       display: flex;
+      align-items: center;
       justify-content: center;
-      align-items: center;
-      z-index: 2000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-      padding: 20px;
-      overflow-y: auto;
+      padding: 4px;
+      width: 24px;
+      height: 24px;
     }
 
-    .lightbox.active {
-      opacity: 1;
-      pointer-events: auto;
+    .play-pause-btn svg {
+      width: 16px;
+      height: 16px;
+      fill: #d4af37;
     }
 
-    .lightbox-content {
-      max-width: 800px;
-      width: 100%;
-      max-height: 90vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      overflow-y: auto;
-      padding-right: 5px;
-    }
-
-    .lightbox-img {
-      max-width: 100%;
-      max-height: 50vh;
-      object-fit: contain;
-      box-shadow: 0 0 30px rgba(0,0,0,0.9);
-      border-radius: 4px;
-    }
-
-    .lightbox-caption {
-      margin-top: 20px;
-      margin-bottom: 10px;
-      text-align: center;
-      width: 100%;
-      max-width: 650px;
-    }
-
-    .lightbox-caption h3 {
-      font-size: 1.3rem;
-      color: var(--accent-color);
-      margin-bottom: 8px;
-      font-weight: 300;
-    }
-
-    .lightbox-caption p {
-      font-size: 0.95rem;
-      color: var(--text-color);
-      line-height: 1.6;
-      font-weight: 300;
-    }
-
-    /* SESSÃO DE COMENTÁRIOS NO LIGHTBOX */
-    .comments-section {
-      width: 100%;
-      max-width: 650px;
-      margin-top: 20px;
-      border-top: 1px solid #222;
-      padding-top: 20px;
-      text-align: left;
-    }
-
-    .comments-section h4 {
-      font-size: 0.95rem;
-      color: var(--accent-color);
-      margin-bottom: 15px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-
-    .comments-list {
-      max-height: 180px;
-      overflow-y: auto;
-      margin-bottom: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      padding-right: 5px;
-    }
-
-    .comment-item {
-      background: #111;
-      padding: 10px 14px;
-      border-radius: 4px;
-      border-left: 2px solid var(--accent-color);
-    }
-
-    .comment-author {
-      font-size: 0.8rem;
-      color: var(--accent-color);
-      font-weight: bold;
-      margin-bottom: 3px;
-    }
-
-    .comment-text {
-      font-size: 0.88rem;
-      color: var(--text-color);
-      line-height: 1.4;
-    }
-
-    .comment-form {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .comment-form input, .comment-form textarea {
-      background: #181818;
-      border: 1px solid #333;
-      color: #fff;
-      padding: 10px;
-      border-radius: 4px;
-      font-family: inherit;
-      font-size: 0.85rem;
-    }
-
-    .comment-form input:focus, .comment-form textarea:focus {
-      outline: none;
-      border-color: var(--accent-color);
-    }
-
-    .btn-send-comment {
-      align-self: flex-end;
-      background: var(--accent-color);
-      color: #000;
-      border: none;
-      padding: 8px 20px;
-      font-size: 0.8rem;
-      font-weight: bold;
+    /* ESTILIZAÇÃO DA BARRA DE VOLUME */
+    .volume-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 80px;
+      height: 4px;
+      background: #444444;
       border-radius: 2px;
-      cursor: pointer;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      outline: none;
     }
 
-    .close-lightbox {
-      position: absolute;
-      top: 20px;
-      right: 30px;
-      color: #fff;
-      font-size: 2.5rem;
+    /* Bolinha do slider no Chrome/Safari */
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #d4af37;
       cursor: pointer;
-      font-weight: 300;
+      border: none;
     }
 
-    /* AJUSTES ESPECÍFICOS PARA TELAS MÓVEIS (CELULARES) */
-    @media (max-width: 600px) {
-      #welcome-screen h1 {
-        font-size: 1.6rem;
-        letter-spacing: 3px;
-      }
-
-      #welcome-screen .sub-title {
-        font-size: 0.85rem;
-        margin-bottom: 20px;
-      }
-
-      .team-photo {
-        width: 100px;
-        height: 100px;
-      }
-
-      .credits {
-        font-size: 0.85rem;
-      }
-
-      .btn-enter {
-        padding: 12px 30px;
-        font-size: 0.8rem;
-        width: 100%;
-        max-width: 280px;
-      }
-
-      .photo-card.highlight img {
-        height: 350px;
-      }
-
-      .audio-player-container {
-        bottom: 15px;
-        right: 15px;
-        left: 15px;
-        justify-content: space-between;
-      }
+    /* Bolinha do slider no Firefox */
+    .volume-slider::-moz-range-thumb {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #d4af37;
+      cursor: pointer;
+      border: none;
     }
   </style>
 </head>
 <body>
 
-  <button class="btn-floating-home" onclick="openWelcomeScreen()">Início</button>
-
-  <!-- TELA DE ENTRADA -->
-  <div id="welcome-screen">
-    <h1>O que você não vê</h1>
-    <p class="sub-title">Uma experiência de pausa, observação e escuta. Coloque os fones para uma melhor imersão.</p>
-
-    <div class="team-container">
-      <img src="https://cdn.jsdelivr.net/gh/franciscoleonardho-sys/o-que-voce-nao-ve@main/Francisco%20Leonardo.jpeg" alt="Francisco Leonardo" class="team-photo">
-      
-      <div class="credits">
-        <p><strong>Projeto de Conclusão de Curso:</strong> Rádio, TV e Internet</p>
-        <p><strong>Autor / Curadoria:</strong> Francisco Leonardo</p>
-        <p><strong>Fotografia & Produção:</strong> Equipe do Projeto</p>
-      </div>
-    </div>
-
-    <div class="intro-audio-box">
-      <label>🎧 Ouça a Introdução do Autor</label>
-      <audio id="author-audio" controls preload="metadata">
-        <source src="https://cdn.jsdelivr.net/gh/franciscoleonardho-sys/o-que-voce-nao-ve@main/Introdu%C3%A7%C3%A3o%20do%20autor.mp3" type="audio/mpeg">
-      </audio>
-    </div>
-
-    <button class="btn-enter" onclick="enterExhibition()">Entrar na Exposição</button>
+  <div class="top-nav">
+    <a href="#" class="btn-inicio">Início</a>
   </div>
 
-  <header>
-    <h2>O que você não vê</h2>
-    <p>Pessoas, rastros e histórias comuns</p>
-  </header>
-
-  <main class="gallery-grid" id="gallery"></main>
-
-  <footer>
-    <p><strong>O QUE VOCÊ NÃO VÊ</strong> — Exposição Digital Fotográfica & Sonora</p>
-    <p>Trabalho de Conclusão de Curso (TCC) em <strong>Rádio, TV e Internet</strong></p>
-    <p>Autor e Curadoria: <strong>Francisco Leonardo</strong> | Produção: Equipe do Projeto</p>
-    <p style="margin-top: 15px; font-size: 0.8rem; opacity: 0.4;">© Todos os direitos reservados aos autores e colaboradores.</p>
-  </footer>
-
-  <!-- PLAYER DE MÚSICA DE FUNDO -->
-  <div class="audio-player-container">
-    <button class="player-btn" id="play-pause-btn" onclick="toggleMusic()">▶</button>
-    <div class="progress-bar" onclick="seekMusic(event)">
-      <div class="progress-fill" id="music-progress"></div>
-    </div>
-    <input type="range" id="vol-slider" class="volume-control" min="0" max="1" step="0.05" value="0.2" onchange="setVolume(this.value)">
-    <audio id="bg-music" src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=piano-ambient-112199.mp3" loop preload="auto"></audio>
-  </div>
-
-  <!-- LIGHTBOX COM COMENTÁRIOS -->
-  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-    <span class="close-lightbox">&times;</span>
-    <div class="lightbox-content" onclick="event.stopPropagation()">
-      <img id="lightbox-img" src="" alt="">
-      <div class="lightbox-caption">
-        <h3 id="lightbox-title"></h3>
-        <p id="lightbox-desc"></p>
-      </div>
-
-      <!-- SESSÃO DE INTERAÇÃO -->
-      <div class="comments-section">
-        <h4>Comentários e Reflexões</h4>
-        <div class="comments-list" id="comments-list">
-          <p style="font-size: 0.8rem; color: #666;">Carregando comentários...</p>
+  <div class="gallery-container">
+    <!-- Card 1 -->
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=600&q=80" alt="Banco vazio na praça" class="card-img">
+      <div class="card-content">
+        <h2 class="card-title">Banco vazio na praça</h2>
+        <p class="card-desc">Um banco pode parecer apenas um objeto. Mas também pode carregar histórias de pessoas que sentaram ali, conversaram, esperaram ou simplesmente ficaram em silêncio.</p>
+        <div class="card-footer">
+          <button class="like-btn" onclick="toggleLike(this)">
+            <svg class="heart-icon" viewBox="0 0 24 24">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+            <span>0</span>
+          </button>
+          <a class="comment-btn">
+            <svg class="comment-icon" viewBox="0 0 24 24">
+              <path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z"/>
+            </svg>
+            Comentar
+          </a>
         </div>
-
-        <form class="comment-form" onsubmit="submitComment(event)">
-          <textarea id="comment-text-input" rows="3" placeholder="O que esta imagem fez você sentir?" required></textarea>
-          <input type="text" id="comment-author-input" placeholder="Seu Nome ou Apelido" required>
-          <button type="submit" class="btn-send-comment">Comentar</button>
-        </form>
       </div>
+    </div>
 
+    <!-- Card 2 -->
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1509114397022-ed747cca3f65?w=600&q=80" alt="Sombra de uma pessoa caminhando" class="card-img">
+      <div class="card-content">
+        <h2 class="card-title">Sombra de uma pessoa caminhando</h2>
+        <p class="card-desc">Às vezes, não é preciso mostrar quem está passando. A sombra já conta que alguém esteve ali.</p>
+        <div class="card-footer">
+          <button class="like-btn" onclick="toggleLike(this)">
+            <svg class="heart-icon" viewBox="0 0 24 24">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+            <span>0</span>
+          </button>
+          <a class="comment-btn">
+            <svg class="comment-icon" viewBox="0 0 24 24">
+              <path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z"/>
+            </svg>
+            Comentar
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&q=80" alt="Calçada rachada" class="card-img">
+      <div class="card-content">
+        <h2 class="card-title">Calçada rachada</h2>
+        <p class="card-desc">Mesmo em um lugar onde nada parecia ter espaço para crescer, alguma coisa encontrou uma maneira de aparecer.</p>
+        <div class="card-footer">
+          <button class="like-btn" onclick="toggleLike(this)">
+            <svg class="heart-icon" viewBox="0 0 24 24">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+            <span>0</span>
+          </button>
+          <a class="comment-btn">
+            <svg class="comment-icon" viewBox="0 0 24 24">
+              <path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z"/>
+            </svg>
+            Comentar
+          </a>
+        </div>
+      </div>
     </div>
   </div>
+
+  <!-- PLAYER DE ÁUDIO REUTILIZÁVEL E PADRONIZADO -->
+  <div class="audio-player-container">
+    <div class="audio-player">
+      <button class="play-pause-btn" id="playPauseBtn" onclick="toggleAudio()">
+        <svg id="playIcon" viewBox="0 0 24 24">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+        <svg id="pauseIcon" viewBox="0 0 24 24" style="display: none;">
+          <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+        </svg>
+      </button>
+      <input type="range" id="volumeControl" class="volume-slider" min="0" max="1" step="0.1" value="0.8" oninput="changeVolume(this.value)">
+    </div>
+  </div>
+
+  <audio id="bgAudio" loop>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+  </audio>
 
   <script>
-    // CONFIGURAÇÃO DO FIREBASE
-    const firebaseConfig = {
-      apiKey: "SUA_API_KEY",
-      authDomain: "SEU_PROJECT_ID.firebaseapp.com",
-      databaseURL: "https://SEU_PROJECT_ID-default-rtdb.firebaseio.com",
-      projectId: "SEU_PROJECT_ID",
-      storageBucket: "SEU_PROJECT_ID.appspot.com",
-      messagingSenderId: "SEU_ID",
-      appId: "SEU_APP_ID"
-    };
-
-    let db = null;
-    try {
-      firebase.initializeApp(firebaseConfig);
-      db = firebase.database();
-    } catch(e) {
-      console.log("Firebase não configurado ainda.");
-    }
-
-    const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQPvjhGZgcE7oZbDvbS8z7Zw4LeqBvRP6Qk7ppQPhfayl40_2fG21MgiNtVtoJNYsujOiEXtQ5W3SCw/pub?output=csv";
-    
-    let currentActivePhotoId = null;
-    const music = document.getElementById('bg-music');
-    music.volume = 0.2;
-
-    music.ontimeupdate = () => {
-      if (music.duration) {
-        const pct = (music.currentTime / music.duration) * 100;
-        document.getElementById('music-progress').style.width = pct + '%';
-      }
-    };
-
-    function parseCSV(text) {
-      const lines = text.split(/\r\n|\n/);
-      const result = [];
-      for (let i = 1; i < lines.length; i++) {
-        if (!lines[i].trim()) continue;
-        const row = [];
-        let insideQuotes = false;
-        let entry = '';
-        for (let char of lines[i]) {
-          if (char === '"') {
-            insideQuotes = !insideQuotes;
-          } else if (char === ',' && !insideQuotes) {
-            row.push(entry.trim());
-            entry = '';
-          } else {
-            entry += char;
-          }
-        }
-        row.push(entry.trim());
-        if (row.length >= 4) {
-          const destaqueValor = row[5] ? row[5].replace(/^"|"$/g, '').trim().toLowerCase() : 'nao';
-          
-          result.push({
-            id: 'foto_' + row[0],
-            ordem: row[0],
-            titulo: row[1].replace(/^"|"$/g, ''),
-            url: row[2].replace(/^"|"$/g, ''),
-            desc: row[3].replace(/^"|"$/g, ''),
-            categoria: row[4] ? row[4].replace(/^"|"$/g, '') : '',
-            destaque: destaqueValor === 'sim'
-          });
-        }
-      }
-      return result;
-    }
-
-    function renderGallery(items) {
-      const gallery = document.getElementById('gallery');
-      gallery.innerHTML = '';
+    function toggleLike(btn) {
+      const countSpan = btn.querySelector('span');
+      let count = parseInt(countSpan.textContent);
       
-      const localLikes = JSON.parse(localStorage.getItem('user_likes') || '{}');
-
-      items.forEach(item => {
-        const card = document.createElement('div');
-        card.className = `photo-card ${item.destaque ? 'highlight' : ''}`;
-        
-        const isLiked = localLikes[item.id] ? 'liked' : '';
-
-        card.innerHTML = `
-          <img src="${item.url}" alt="${item.titulo}" loading="lazy" onclick="openLightbox('${item.id}', '${item.url}', '${item.titulo}', '${item.desc}')" onerror="this.src='https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=500&auto=format&fit=crop'">
-          <div class="photo-info">
-            <div class="photo-title" onclick="openLightbox('${item.id}', '${item.url}', '${item.titulo}', '${item.desc}')">${item.titulo} ${item.destaque ? '✦' : ''}</div>
-            <div class="photo-desc">${item.desc}</div>
-            <div class="card-actions">
-              <button class="btn-like ${isLiked}" id="like-btn-${item.id}" onclick="likePhoto('${item.id}', event)">
-                <svg class="heart-icon" viewBox="0 0 24 24">
-                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                </svg>
-                <span id="like-count-${item.id}">0</span>
-              </button>
-              <span style="font-size: 0.8rem; color: #777; cursor: pointer;" onclick="openLightbox('${item.id}', '${item.url}', '${item.titulo}', '${item.desc}')">💬 Comentar</span>
-            </div>
-          </div>
-        `;
-        gallery.appendChild(card);
-
-        listenLikes(item.id);
-      });
-    }
-
-    function likePhoto(photoId, event) {
-      event.stopPropagation();
-      const btn = document.getElementById(`like-btn-${photoId}`);
-      const countEl = document.getElementById(`like-count-${photoId}`);
-      let currentLikes = parseInt(countEl.innerText) || 0;
-
-      let localLikes = JSON.parse(localStorage.getItem('user_likes') || '{}');
-
-      if (!localLikes[photoId]) {
-        localLikes[photoId] = true;
-        btn.classList.add('liked');
-        
-        if (db) {
-          db.ref(`likes/${photoId}`).transaction((likes) => (likes || 0) + 1);
-        } else {
-          countEl.innerText = currentLikes + 1;
-        }
-      } else {
-        delete localLikes[photoId];
+      if (btn.classList.contains('liked')) {
         btn.classList.remove('liked');
-        
-        if (db) {
-          db.ref(`likes/${photoId}`).transaction((likes) => Math.max((likes || 1) - 1, 0));
-        } else {
-          countEl.innerText = Math.max(currentLikes - 1, 0);
-        }
-      }
-
-      localStorage.setItem('user_likes', JSON.stringify(localLikes));
-    }
-
-    function listenLikes(photoId) {
-      if (!db) {
-        const localLikes = JSON.parse(localStorage.getItem('user_likes') || '{}');
-        const countEl = document.getElementById(`like-count-${photoId}`);
-        if (countEl && localLikes[photoId]) {
-          countEl.innerText = 1;
-        }
-        return;
-      }
-
-      db.ref(`likes/${photoId}`).on('value', (snapshot) => {
-        const val = snapshot.val() || 0;
-        const el = document.getElementById(`like-count-${photoId}`);
-        if (el) el.innerText = val;
-      });
-    }
-
-    function loadComments(photoId) {
-      const listEl = document.getElementById('comments-list');
-      listEl.innerHTML = '';
-
-      if (!db) {
-        listEl.innerHTML = '<p style="font-size: 0.8rem; color: #666;">Conecte o Firebase para carregar comentários em tempo real.</p>';
-        return;
-      }
-
-      db.ref(`comments/${photoId}`).on('value', (snapshot) => {
-        listEl.innerHTML = '';
-        const data = snapshot.val();
-        if (!data) {
-          listEl.innerHTML = '<p style="font-size: 0.8rem; color: #666;">Seja o primeiro a deixar uma reflexão sobre esta foto.</p>';
-          return;
-        }
-
-        Object.values(data).forEach(c => {
-          const item = document.createElement('div');
-          item.className = 'comment-item';
-          item.innerHTML = `
-            <div class="comment-author">${escapeHtml(c.author)}</div>
-            <div class="comment-text">${escapeHtml(c.text)}</div>
-          `;
-          listEl.appendChild(item);
-        });
-        listEl.scrollTop = listEl.scrollHeight;
-      });
-    }
-
-    function submitComment(e) {
-      e.preventDefault();
-      const authorInput = document.getElementById('comment-author-input');
-      const textInput = document.getElementById('comment-text-input');
-
-      if (!authorInput.value.trim() || !textInput.value.trim()) return;
-
-      if (db && currentActivePhotoId) {
-        db.ref(`comments/${currentActivePhotoId}`).push({
-          author: authorInput.value.trim(),
-          text: textInput.value.trim(),
-          timestamp: Date.now()
-        });
-      }
-
-      textInput.value = '';
-    }
-
-    function escapeHtml(str) {
-      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    }
-
-    async function fetchFromSheets() {
-      try {
-        const response = await fetch(GOOGLE_SHEETS_CSV_URL);
-        const csvText = await response.text();
-        const items = parseCSV(csvText);
-        renderGallery(items);
-      } catch (err) {
-        console.error("Erro ao carregar a planilha:", err);
-      }
-    }
-
-    function enterExhibition() {
-      document.getElementById('welcome-screen').classList.add('hidden');
-      const authorAudio = document.getElementById('author-audio');
-      if (authorAudio) authorAudio.pause();
-
-      music.play().then(() => {
-        document.getElementById('play-pause-btn').innerText = '⏸';
-      }).catch(e => console.log("Erro de reprodução:", e));
-    }
-
-    function openWelcomeScreen() {
-      document.getElementById('welcome-screen').classList.remove('hidden');
-    }
-
-    function toggleMusic() {
-      if (music.paused) {
-        music.play();
-        document.getElementById('play-pause-btn').innerText = '⏸';
+        countSpan.textContent = count - 1;
       } else {
-        music.pause();
-        document.getElementById('play-pause-btn').innerText = '▶';
+        btn.classList.add('liked');
+        countSpan.textContent = count + 1;
       }
     }
 
-    function setVolume(val) {
-      music.volume = parseFloat(val);
-    }
+    const audio = document.getElementById('bgAudio');
+    const playIcon = document.getElementById('playIcon');
+    const pauseIcon = document.getElementById('pauseIcon');
 
-    function seekMusic(e) {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const pos = (e.clientX - rect.left) / rect.width;
-      if (music.duration) {
-        music.currentTime = pos * music.duration;
+    function toggleAudio() {
+      if (audio.paused) {
+        audio.play();
+        playIcon.style.display = 'none';
+        pauseIcon.style.display = 'block';
+      } else {
+        audio.pause();
+        playIcon.style.display = 'block';
+        pauseIcon.style.display = 'none';
       }
     }
 
-    function openLightbox(id, url, title, desc) {
-      currentActivePhotoId = id;
-      document.getElementById('lightbox-img').src = url;
-      document.getElementById('lightbox-title').innerText = title;
-      document.getElementById('lightbox-desc').innerText = desc;
-      document.getElementById('lightbox').classList.add('active');
-
-      loadComments(id);
+    function changeVolume(value) {
+      audio.volume = value;
     }
-
-    function closeLightbox() {
-      document.getElementById('lightbox').classList.remove('active');
-    }
-
-    fetchFromSheets();
   </script>
 </body>
 </html>
