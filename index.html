@@ -451,14 +451,14 @@
     <p style="margin-top: 15px; font-size: 0.8rem; opacity: 0.4;">© Todos os direitos reservados aos autores e colaboradores.</p>
   </footer>
 
-  <!-- PLAYER DE MÚSICA DE FUNDO APONTANDO PARA O SEU GITHUB -->
+  <!-- PLAYER DE MÚSICA DE FUNDO ORIGINAL -->
   <div class="audio-player-container">
     <button class="player-btn" id="play-pause-btn" onclick="toggleMusic()">▶</button>
     <div class="progress-bar" onclick="seekMusic(event)">
       <div class="progress-fill" id="music-progress"></div>
     </div>
-    <input type="range" id="vol-slider" class="volume-control" min="0" max="1" step="0.05" value="0.15" onchange="setVolume(this.value)">
-    <audio id="bg-music" src="https://cdn.jsdelivr.net/gh/franciscoleonardho-sys/o-que-voce-nao-ve@main/trilha.mp3" loop preload="auto"></audio>
+    <input type="range" id="vol-slider" class="volume-control" min="0" max="1" step="0.05" value="0.2" onchange="setVolume(this.value)">
+    <audio id="bg-music" src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Satie_Gymnopedie_No_1.ogg" loop preload="auto" crossorigin="anonymous"></audio>
   </div>
 
   <!-- LIGHTBOX -->
@@ -477,9 +477,7 @@
     const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQPvjhGZgcE7oZbDvbS8z7Zw4LeqBvRP6Qk7ppQPhfayl40_2fG21MgiNtVtoJNYsujOiEXtQ5W3SCw/pub?output=csv";
 
     const music = document.getElementById('bg-music');
-    
-    // VOLUME FIXADO EM 15% (BAIXINHO)
-    music.volume = 0.15;
+    music.volume = 0.2;
 
     music.ontimeupdate = () => {
       if (music.duration) {
@@ -560,11 +558,10 @@
       const authorAudio = document.getElementById('author-audio');
       if (authorAudio) authorAudio.pause();
 
-      // INICIA A TRILHA AMBIENTE AUTOMATICAMENTE APÓS O CLIQUE
       music.play().then(() => {
         document.getElementById('play-pause-btn').innerText = '⏸';
       }).catch(e => {
-        console.log("Aguardando ação no player:", e);
+        console.log("Erro de reprodução:", e);
       });
     }
 
