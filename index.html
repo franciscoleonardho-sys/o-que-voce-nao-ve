@@ -289,7 +289,7 @@
       margin-bottom: 8px;
     }
 
-    /* PLAYER DE MÚSICA DE FUNDO */
+    /* PLAYER DE MÚSICA DE FUNDO ORIGINAL */
     .audio-player-container {
       position: fixed;
       bottom: 25px;
@@ -451,14 +451,14 @@
     <p style="margin-top: 15px; font-size: 0.8rem; opacity: 0.4;">© Todos os direitos reservados aos autores e colaboradores.</p>
   </footer>
 
-  <!-- PLAYER DE MÚSICA DE FUNDO ORIGINAL -->
+  <!-- PLAYER DE MÚSICA DE FUNDO INICIAL -->
   <div class="audio-player-container">
     <button class="player-btn" id="play-pause-btn" onclick="toggleMusic()">▶</button>
     <div class="progress-bar" onclick="seekMusic(event)">
       <div class="progress-fill" id="music-progress"></div>
     </div>
     <input type="range" id="vol-slider" class="volume-control" min="0" max="1" step="0.05" value="0.2" onchange="setVolume(this.value)">
-    <audio id="bg-music" src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Satie_Gymnopedie_No_1.ogg" loop preload="auto" crossorigin="anonymous"></audio>
+    <audio id="bg-music" src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=piano-ambient-112199.mp3" loop preload="auto"></audio>
   </div>
 
   <!-- LIGHTBOX -->
@@ -561,7 +561,7 @@
       music.play().then(() => {
         document.getElementById('play-pause-btn').innerText = '⏸';
       }).catch(e => {
-        console.log("Erro de reprodução:", e);
+        console.log("Erro ao tocar áudio:", e);
       });
     }
 
