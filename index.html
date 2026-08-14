@@ -34,7 +34,7 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.92)), url('https://raw.githubusercontent.com/franciscoleonardho-sys/o-que-voce-nao-ve/main/Janela%20no%20fim%20da%20tarde.jpg') center/cover no-repeat;
+      background: linear-gradient(rgba(0,0,0,0.88), rgba(0,0,0,0.94)), url('https://cdn.jsdelivr.net/gh/franciscoleonardho-sys/o-que-voce-nao-ve@main/Janela%20no%20fim%20da%20tarde.jpg') center/cover no-repeat;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -52,38 +52,41 @@
     }
 
     #welcome-screen h1 {
-      font-size: 2.5rem;
+      font-size: 2.2rem;
       font-weight: 300;
       letter-spacing: 5px;
-      margin-bottom: 12px;
+      margin-bottom: 15px;
       color: #fff;
       text-transform: uppercase;
     }
 
+    /* SUBTÍTULO AJUSTADO PARA NÃO VAZAR */
     #welcome-screen .sub-title {
-      max-width: 650px;
+      max-width: 480px;
+      width: 90%;
       color: var(--text-muted);
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       line-height: 1.6;
-      margin-bottom: 30px;
+      margin: 0 auto 30px auto;
       font-weight: 300;
+      padding: 0 10px;
     }
 
     .team-container {
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
       background: transparent;
       padding: 0;
       border: none;
-      max-width: 600px;
+      max-width: 500px;
       width: 100%;
     }
 
     .team-photo {
-      width: 130px;
-      height: 130px;
+      width: 120px;
+      height: 120px;
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid var(--accent-color);
@@ -110,10 +113,12 @@
       flex-direction: column;
       align-items: center;
       gap: 10px;
+      width: 100%;
+      max-width: 320px;
     }
 
     .intro-audio-box label {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       letter-spacing: 1.5px;
       text-transform: uppercase;
       color: var(--accent-color);
@@ -122,16 +127,15 @@
     .intro-audio-box audio {
       height: 40px;
       accent-color: var(--accent-color);
-      max-width: 320px;
       width: 100%;
     }
 
     .btn-enter {
-      padding: 15px 45px;
+      padding: 14px 40px;
       background-color: transparent;
       border: 1px solid var(--accent-color);
       color: var(--accent-color);
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       letter-spacing: 3px;
       text-transform: uppercase;
       cursor: pointer;
@@ -264,7 +268,7 @@
       font-weight: 300;
     }
 
-    /* RODAPÉ FOSCO E ELEGANTE SEM LINHAS VINCULADAS */
+    /* RODAPÉ FOSCO E EGANTE */
     footer {
       position: relative;
       padding: 80px 20px 120px;
@@ -413,19 +417,23 @@
     <p class="sub-title">Uma experiência de pausa, observação e escuta. Coloque os fones para uma melhor imersão.</p>
 
     <div class="team-container">
-      <img src="https://raw.githubusercontent.com/franciscoleonardho-sys/o-que-voce-nao-ve/main/Francisco%20Leonardo.jpeg" alt="Francisco Leonardo" class="team-photo">
+      <img src="https://cdn.jsdelivr.net/gh/franciscoleonardho-sys/o-que-voce-nao-ve@main/Francisco%20Leonardo.jpeg" alt="Francisco Leonardo" class="team-photo">
       
       <div class="credits">
-        <p><strong>Projeto de Conclusão de Curso:</strong> Rádio e TV</p>
+        <p><strong>Projeto de Conclusão de Curso:</strong> Rádio, TV e Internet</p>
         <p><strong>Autor / Curadoria:</strong> Francisco Leonardo</p>
         <p><strong>Fotografia & Produção:</strong> Equipe do Projeto</p>
       </div>
     </div>
 
-    <!-- ÁUDIO DE INTRODUÇÃO DO AUTOR (LINK CORRIGIDO EXATO DO SEU GITHUB) -->
+    <!-- ÁUDIO DE INTRODUÇÃO DO AUTOR VIA CDN JSDELIVR (SEM ERRO DE CONTENT-TYPE) -->
     <div class="intro-audio-box">
       <label>🎧 Ouça a Introdução do Autor</label>
-      <audio id="author-audio" controls preload="auto" src="https://raw.githubusercontent.com/franciscoleonardho-sys/o-que-voce-nao-ve/main/Introdu%C3%A7%C3%A3o%20do%20autor.mp3"></audio>
+      <audio id="author-audio" controls preload="metadata">
+        <source src="https://cdn.jsdelivr.net/gh/franciscoleonardho-sys/o-que-voce-nao-ve@main/Introdu%C3%A7%C3%A3o%20do%20autor.mp3" type="audio/mpeg">
+        <source src="https://raw.githubusercontent.com/franciscoleonardho-sys/o-que-voce-nao-ve/main/Introdu%C3%A7%C3%A3o%20do%20autor.mp3" type="audio/mpeg">
+        Seu navegador não suporta áudio.
+      </audio>
     </div>
 
     <button class="btn-enter" onclick="enterExhibition()">Entrar na Exposição</button>
@@ -441,7 +449,7 @@
   <!-- RODAPÉ AUTORAL -->
   <footer>
     <p><strong>O QUE VOCÊ NÃO VÊ</strong> — Exposição Digital Fotográfica & Sonora</p>
-    <p>Trabalho de Conclusão de Curso (TCC) em <strong>Rádio e TV</strong></p>
+    <p>Trabalho de Conclusão de Curso (TCC) em <strong>Rádio, TV e Internet</strong></p>
     <p>Autor e Curadoria: <strong>Francisco Leonardo</strong> | Produção: Equipe do Projeto</p>
     <p style="margin-top: 15px; font-size: 0.8rem; opacity: 0.4;">© Todos os direitos reservados aos autores e colaboradores.</p>
   </footer>
@@ -453,7 +461,7 @@
       <div class="progress-fill" id="music-progress"></div>
     </div>
     <input type="range" id="vol-slider" class="volume-control" min="0" max="1" step="0.05" value="0.5" onchange="setVolume(this.value)">
-    <audio id="bg-music"></audio>
+    <audio id="bg-music" crossorigin="anonymous"></audio>
   </div>
 
   <!-- LIGHTBOX -->
@@ -471,13 +479,11 @@
   <script>
     const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQPvjhGZgcE7oZbDvbS8z7Zw4LeqBvRP6Qk7ppQPhfayl40_2fG21MgiNtVtoJNYsujOiEXtQ5W3SCw/pub?output=csv";
 
-    // PLAYLIST DE 5 MÚSICAS AMBIENTAIS INSTRUMENTAIS EM LOOP
+    // PLAYLIST DE MÚSICAS MP3 DIRETA DE SERVIDORES DE AUDIO
     const playlist = [
-      "https://raw.githubusercontent.com/rafaelreis-hotmart/Audio-Samples/main/ambient-1.mp3",
-      "https://raw.githubusercontent.com/rafaelreis-hotmart/Audio-Samples/main/ambient-2.mp3",
-      "https://raw.githubusercontent.com/rafaelreis-hotmart/Audio-Samples/main/ambient-3.mp3",
-      "https://actions.google.com/sounds/v1/ambiences/outdoor_park_gentle_breeze.ogg",
-      "https://actions.google.com/sounds/v1/ambiences/forest_morning.ogg"
+      "https://upload.wikimedia.org/wikipedia/commons/2/22/Gymnopedie_No_1.ogg",
+      "https://upload.wikimedia.org/wikipedia/commons/e/eb/Gnossienne_1.ogg",
+      "https://upload.wikimedia.org/wikipedia/commons/0/0e/Moonlight_Sonata_1st_movement.ogg"
     ];
 
     let currentTrackIndex = 0;
@@ -488,12 +494,12 @@
       music.load();
     }
 
-    // A CADA FIM DE MÚSICA, PASSA PARA A PRÓXIMA AUTOMÁTICAMENTE (LOOP INFINITO)
-    music.onended = function() {
+    // EVENTO DE CONTINUIDADE DA PLAYLIST
+    music.addEventListener('ended', function() {
       currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
       loadTrack(currentTrackIndex);
-      music.play().catch(e => console.log("Aguardando interação"));
-    };
+      music.play().catch(e => console.log("Aguardando ação do usuário"));
+    });
 
     music.ontimeupdate = () => {
       if (music.duration) {
@@ -576,7 +582,7 @@
 
       music.play().then(() => {
         document.getElementById('play-pause-btn').innerText = '⏸';
-      }).catch(e => console.log("Clique no play para ouvir"));
+      }).catch(e => console.log("Permissão necessária para o áudio automático"));
     }
 
     function openWelcomeScreen() {
