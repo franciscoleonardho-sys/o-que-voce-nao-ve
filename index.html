@@ -34,7 +34,7 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.95)), url('https://picsum.photos/id/1043/1920/1080?grayscale') center/cover;
+      background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.95)), url('https://images.unsplash.com/photo-1518998053901-5348d3961a04?auto=format&fit=crop&w=1920&q=80') center/cover;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -298,7 +298,7 @@
       <div class="progress-fill" id="music-progress"></div>
     </div>
     <input type="range" class="volume-control" min="0" max="1" step="0.05" value="0.5" onchange="setVolume(this.value)">
-    <audio id="bg-music" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+    <audio id="bg-music" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=ambient-piano-amp-strings-10711.mp3"></audio>
   </div>
 
   <!-- LIGHTBOX -->
@@ -314,22 +314,25 @@
   </div>
 
   <script>
-    // Link direto da sua planilha pública
     const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQPvjhGZgcE7oZbDvbS8z7Zw4LeqBvRP6Qk7ppQPhfayl40_2fG21MgiNtVtoJNYsujOiEXtQ5W3SCw/pub?output=csv";
 
-    // Converte links do Google Drive para links diretos de imagem
+    // Formata o link do Google Drive para acesso direto de imagem
     function formatDriveUrl(url) {
       if (!url) return '';
-      if (url.includes('drive.google.com') && url.includes('/d/')) {
-        const match = url.match(/\/d\/([^\/]+)/);
-        if (match && match[1]) {
-          return `https://lh3.googleusercontent.com/d/${match[1]}`;
-        }
+      let fileId = '';
+      if (url.includes('drive.google.com')) {
+        const matchD = url.match(/\/d\/([^\/]+)/);
+        const matchId = url.match(/id=([^&]+)/);
+        if (matchD && matchD[1]) fileId = matchD[1];
+        else if (matchId && matchId[1]) fileId = matchId[1];
+      }
+      if (fileId) {
+        return `https://drive.google.com/uc?export=view&id=${fileId}`;
       }
       return url;
     }
 
-    // Processa o texto CSV respeitando aspas e vírgulas
+    // Processa o CSV do Google Sheets
     function parseCSV(text) {
       const lines = text.split(/\r\n|\n/);
       const result = [];
@@ -361,7 +364,7 @@
       return result;
     }
 
-    // Renderiza os cards na tela
+    // Renderiza os cards na galeria
     function renderGallery(items) {
       const gallery = document.getElementById('gallery');
       gallery.innerHTML = '';
@@ -370,7 +373,7 @@
         card.className = 'photo-card';
         card.onclick = () => openLightbox(item.url, item.titulo, item.desc);
         card.innerHTML = `
-          <img src="${item.url}" alt="${item.titulo}" loading="lazy" onerror="this.src='https://via.placeholder.com/600x400?text=Imagem+Indisponivel'">
+          <img src="${item.url}" alt="${item.titulo}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=500&auto=format&fit=crop'">
           <div class="photo-info">
             <div class="photo-title">${item.titulo}</div>
             <div class="photo-desc">${item.desc}</div>
@@ -380,7 +383,6 @@
       });
     }
 
-    // Busca os dados da planilha
     async function fetchFromSheets() {
       try {
         const response = await fetch(GOOGLE_SHEETS_CSV_URL);
@@ -392,19 +394,20 @@
       }
     }
 
-    // Entrar na exposição
     function enterExhibition() {
       document.getElementById('welcome-screen').classList.add('hidden');
       const music = document.getElementById('bg-music');
-      music.play();
-      document.getElementById('play-pause-btn').innerText = '⏸';
+      music.play().then(() => {
+        document.getElementById('play-pause-btn').innerText = '⏸';
+      }).catch(e => console.log("Áudio aguardando interação do usuário"));
     }
 
-    // Áudio / Player
     const music = document.getElementById('bg-music');
     music.ontimeupdate = () => {
-      const pct = (music.currentTime / music.duration) * 100;
-      document.getElementById('music-progress').style.width = pct + '%';
+      if (music.duration) {
+        const pct = (music.currentTime / music.duration) * 100;
+        document.getElementById('music-progress').style.width = pct + '%';
+      }
     };
 
     function toggleMusic() {
@@ -424,10 +427,11 @@
     function seekMusic(e) {
       const rect = e.currentTarget.getBoundingClientRect();
       const pos = (e.clientX - rect.left) / rect.width;
-      music.currentTime = pos * music.duration;
+      if (music.duration) {
+        music.currentTime = pos * music.duration;
+      }
     }
 
-    // Lightbox / Ampliação
     function openLightbox(url, title, desc) {
       document.getElementById('lightbox-img').src = url;
       document.getElementById('lightbox-title').innerText = title;
