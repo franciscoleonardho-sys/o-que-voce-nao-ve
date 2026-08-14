@@ -32,22 +32,24 @@
       overflow-x: hidden;
     }
 
-    /* TELA DE ENTRADA / APRESENTAÇÃO */
+    /* TELA DE ENTRADA / APRESENTAÇÃO CORRIGIDA PARA CELULAR */
     #welcome-screen {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
+      height: 100dvh; /* Garante altura perfeita considerando a barra do navegador mobile */
       background: linear-gradient(rgba(0,0,0,0.88), rgba(0,0,0,0.94)), url('https://cdn.jsdelivr.net/gh/franciscoleonardho-sys/o-que-voce-nao-ve@main/Janela%20no%20fim%20da%20tarde.jpg') center/cover no-repeat;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
+      justify-content: flex-start; /* Alinhamento ao topo para suportar rolagem */
       text-align: center;
-      padding: 30px 20px;
+      padding: 40px 20px 60px 20px;
       z-index: 1000;
-      overflow-y: auto;
+      overflow-y: auto; /* Permite rolar a tela se o conteúdo for maior que o visor */
+      -webkit-overflow-scrolling: touch; /* Rolagem suave no iOS */
       transition: opacity 0.8s ease, visibility 0.8s;
     }
 
@@ -60,6 +62,7 @@
       font-size: 2.2rem;
       font-weight: 300;
       letter-spacing: 5px;
+      margin-top: auto; /* Centraliza verticalmente se houver espaço */
       margin-bottom: 15px;
       color: #fff;
       text-transform: uppercase;
@@ -71,7 +74,7 @@
       color: var(--text-muted);
       font-size: 0.95rem;
       line-height: 1.6;
-      margin: 0 auto 30px auto;
+      margin: 0 auto 25px auto;
       font-weight: 300;
       padding: 0 10px;
     }
@@ -94,7 +97,7 @@
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid var(--accent-color);
-      margin-bottom: 18px;
+      margin-bottom: 15px;
       box-shadow: 0 0 25px rgba(201, 160, 80, 0.2);
     }
 
@@ -144,6 +147,8 @@
       cursor: pointer;
       transition: all 0.3s ease;
       border-radius: 2px;
+      margin-bottom: auto; /* Garante margem final ao rolar */
+      flex-shrink: 0;
     }
 
     .btn-enter:hover {
@@ -272,7 +277,7 @@
       margin-bottom: 15px;
     }
 
-    /* AÇÕES DO CARD (CURTIR COM CORAÇÃO DOURADO) */
+    /* AÇÕES DO CARD */
     .card-actions {
       display: flex;
       align-items: center;
@@ -385,7 +390,7 @@
       accent-color: var(--accent-color);
     }
 
-    /* LIGHTBOX COM INTERAÇÃO (COMENTÁRIOS E CURTIDAS) */
+    /* LIGHTBOX COM INTERAÇÃO */
     .lightbox {
       position: fixed;
       top: 0;
@@ -542,6 +547,46 @@
       cursor: pointer;
       font-weight: 300;
     }
+
+    /* AJUSTES ESPECÍFICOS PARA TELAS MÓVEIS (CELULARES) */
+    @media (max-width: 600px) {
+      #welcome-screen h1 {
+        font-size: 1.6rem;
+        letter-spacing: 3px;
+      }
+
+      #welcome-screen .sub-title {
+        font-size: 0.85rem;
+        margin-bottom: 20px;
+      }
+
+      .team-photo {
+        width: 100px;
+        height: 100px;
+      }
+
+      .credits {
+        font-size: 0.85rem;
+      }
+
+      .btn-enter {
+        padding: 12px 30px;
+        font-size: 0.8rem;
+        width: 100%;
+        max-width: 280px;
+      }
+
+      .photo-card.highlight img {
+        height: 350px;
+      }
+
+      .audio-player-container {
+        bottom: 15px;
+        right: 15px;
+        left: 15px;
+        justify-content: space-between;
+      }
+    }
   </style>
 </head>
 <body>
@@ -614,7 +659,6 @@
           <p style="font-size: 0.8rem; color: #666;">Carregando comentários...</p>
         </div>
 
-        <!-- FORMULÁRIO REORDENADO: COMENTÁRIO PRIMEIRO, NOME DEPOIS -->
         <form class="comment-form" onsubmit="submitComment(event)">
           <textarea id="comment-text-input" rows="3" placeholder="O que esta imagem fez você sentir?" required></textarea>
           <input type="text" id="comment-author-input" placeholder="Seu Nome ou Apelido" required>
@@ -626,7 +670,7 @@
   </div>
 
   <script>
-    // CONFIGURAÇÃO DO FIREBASE (Insira seus dados aqui)
+    // CONFIGURAÇÃO DO FIREBASE
     const firebaseConfig = {
       apiKey: "SUA_API_KEY",
       authDomain: "SEU_PROJECT_ID.firebaseapp.com",
@@ -637,13 +681,12 @@
       appId: "SEU_APP_ID"
     };
 
-    // Inicialização do Firebase se a chave for válida
     let db = null;
     try {
       firebase.initializeApp(firebaseConfig);
       db = firebase.database();
     } catch(e) {
-      console.log("Firebase não configurado ainda. As curtidas e comentários funcionarão em modo de demonstração local.");
+      console.log("Firebase não configurado ainda.");
     }
 
     const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQPvjhGZgcE7oZbDvbS8z7Zw4LeqBvRP6Qk7ppQPhfayl40_2fG21MgiNtVtoJNYsujOiEXtQ5W3SCw/pub?output=csv";
@@ -725,12 +768,10 @@
         `;
         gallery.appendChild(card);
 
-        // Ouvir número de curtidas em tempo real ou carregar do salvamento local
         listenLikes(item.id);
       });
     }
 
-    /* SISTEMA DE CURTIDAS COM LOCALSTORAGE E SUPORTE A FIREBASE */
     function likePhoto(photoId, event) {
       event.stopPropagation();
       const btn = document.getElementById(`like-btn-${photoId}`);
@@ -740,7 +781,6 @@
       let localLikes = JSON.parse(localStorage.getItem('user_likes') || '{}');
 
       if (!localLikes[photoId]) {
-        // Usuário curtiu
         localLikes[photoId] = true;
         btn.classList.add('liked');
         
@@ -750,7 +790,6 @@
           countEl.innerText = currentLikes + 1;
         }
       } else {
-        // Usuário descurtiu
         delete localLikes[photoId];
         btn.classList.remove('liked');
         
@@ -766,7 +805,6 @@
 
     function listenLikes(photoId) {
       if (!db) {
-        // Se sem Firebase, recupera contagem simulada ou salva localmente
         const localLikes = JSON.parse(localStorage.getItem('user_likes') || '{}');
         const countEl = document.getElementById(`like-count-${photoId}`);
         if (countEl && localLikes[photoId]) {
@@ -782,7 +820,6 @@
       });
     }
 
-    /* SISTEMA DE COMENTÁRIOS */
     function loadComments(photoId) {
       const listEl = document.getElementById('comments-list');
       listEl.innerHTML = '';
