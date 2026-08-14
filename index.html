@@ -60,7 +60,6 @@
       text-transform: uppercase;
     }
 
-    /* SUBTÍTULO AJUSTADO PARA NÃO VAZAR */
     #welcome-screen .sub-title {
       max-width: 480px;
       width: 90%;
@@ -268,7 +267,7 @@
       font-weight: 300;
     }
 
-    /* RODAPÉ FOSCO E EGANTE */
+    /* RODAPÉ FOSCO */
     footer {
       position: relative;
       padding: 80px 20px 120px;
@@ -426,13 +425,11 @@
       </div>
     </div>
 
-    <!-- ÁUDIO DE INTRODUÇÃO DO AUTOR VIA CDN JSDELIVR (SEM ERRO DE CONTENT-TYPE) -->
+    <!-- ÁUDIO DE INTRODUÇÃO DO AUTOR -->
     <div class="intro-audio-box">
       <label>🎧 Ouça a Introdução do Autor</label>
       <audio id="author-audio" controls preload="metadata">
         <source src="https://cdn.jsdelivr.net/gh/franciscoleonardho-sys/o-que-voce-nao-ve@main/Introdu%C3%A7%C3%A3o%20do%20autor.mp3" type="audio/mpeg">
-        <source src="https://raw.githubusercontent.com/franciscoleonardho-sys/o-que-voce-nao-ve/main/Introdu%C3%A7%C3%A3o%20do%20autor.mp3" type="audio/mpeg">
-        Seu navegador não suporta áudio.
       </audio>
     </div>
 
@@ -460,8 +457,8 @@
     <div class="progress-bar" onclick="seekMusic(event)">
       <div class="progress-fill" id="music-progress"></div>
     </div>
-    <input type="range" id="vol-slider" class="volume-control" min="0" max="1" step="0.05" value="0.5" onchange="setVolume(this.value)">
-    <audio id="bg-music" crossorigin="anonymous"></audio>
+    <input type="range" id="vol-slider" class="volume-control" min="0" max="1" step="0.05" value="0.15" onchange="setVolume(this.value)">
+    <audio id="bg-music" preload="auto"></audio>
   </div>
 
   <!-- LIGHTBOX -->
@@ -479,26 +476,31 @@
   <script>
     const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQPvjhGZgcE7oZbDvbS8z7Zw4LeqBvRP6Qk7ppQPhfayl40_2fG21MgiNtVtoJNYsujOiEXtQ5W3SCw/pub?output=csv";
 
-    // PLAYLIST DE MÚSICAS MP3 DIRETA DE SERVIDORES DE AUDIO
+    // PLAYLIST DE 5 FAIXAS INSTRUMENTAIS SUAVES EM CDN GLOBAL
     const playlist = [
-      "https://upload.wikimedia.org/wikipedia/commons/2/22/Gymnopedie_No_1.ogg",
-      "https://upload.wikimedia.org/wikipedia/commons/e/eb/Gnossienne_1.ogg",
-      "https://upload.wikimedia.org/wikipedia/commons/0/0e/Moonlight_Sonata_1st_movement.ogg"
+      "https://cdn.freesound.org/previews/612/612610_5674468-lq.mp3",
+      "https://cdn.freesound.org/previews/554/554841_11861866-lq.mp3",
+      "https://cdn.freesound.org/previews/416/416837_5121236-lq.mp3",
+      "https://cdn.freesound.org/previews/463/463200_9281371-lq.mp3",
+      "https://cdn.freesound.org/previews/518/518850_11139414-lq.mp3"
     ];
 
     let currentTrackIndex = 0;
     const music = document.getElementById('bg-music');
+    
+    // DEFINE O VOLUME INICIAL DA MÚSICA DE FUNDO PARA 15% (BAIXINHO)
+    music.volume = 0.15;
 
     function loadTrack(index) {
       music.src = playlist[index];
       music.load();
     }
 
-    // EVENTO DE CONTINUIDADE DA PLAYLIST
+    // CUIDA DO ENCADEAMENTO DA PLAYLIST E LOOP INFINITO
     music.addEventListener('ended', function() {
       currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
       loadTrack(currentTrackIndex);
-      music.play().catch(e => console.log("Aguardando ação do usuário"));
+      music.play().catch(e => console.log("Aguardando interação"));
     });
 
     music.ontimeupdate = () => {
@@ -580,9 +582,13 @@
       const authorAudio = document.getElementById('author-audio');
       if (authorAudio) authorAudio.pause();
 
+      // INICIA A TRILHA DE FUNDO AUTOMATICAMENTE APÓS O CLIQUE
+      loadTrack(currentTrackIndex);
       music.play().then(() => {
         document.getElementById('play-pause-btn').innerText = '⏸';
-      }).catch(e => console.log("Permissão necessária para o áudio automático"));
+      }).catch(e => {
+        console.log("Ação manual necessária no player");
+      });
     }
 
     function openWelcomeScreen() {
@@ -622,7 +628,6 @@
       document.getElementById('lightbox').classList.remove('active');
     }
 
-    loadTrack(currentTrackIndex);
     fetchFromSheets();
   </script>
 </body>
