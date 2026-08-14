@@ -264,26 +264,17 @@
       font-weight: 300;
     }
 
-    /* RODAPÉ AUTORAL - TRANSIÇÃO FOSCA E SUBTIL */
+    /* RODAPÉ FOSCO E ELEGANTE SEM LINHAS VINCULADAS */
     footer {
       position: relative;
-      padding: 70px 20px 120px;
+      padding: 80px 20px 120px;
       text-align: center;
-      background: linear-gradient(180deg, rgba(8,8,8,1) 0%, rgba(15,15,18,1) 100%);
+      background: linear-gradient(180deg, rgba(8,8,8,0) 0%, rgba(18,18,22,0.95) 100%);
+      backdrop-filter: blur(12px);
       color: var(--text-muted);
       font-size: 0.9rem;
       line-height: 1.8;
-      box-shadow: inset 0 20px 30px -15px rgba(255, 255, 255, 0.03);
-    }
-
-    footer::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 10%;
-      width: 80%;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+      margin-top: 40px;
     }
 
     footer strong {
@@ -295,7 +286,7 @@
       margin-bottom: 8px;
     }
 
-    /* PLAYER DE MÚSICA */
+    /* PLAYER DE MÚSICA DE FUNDO */
     .audio-player-container {
       position: fixed;
       bottom: 25px;
@@ -431,10 +422,10 @@
       </div>
     </div>
 
-    <!-- ÁUDIO DE INTRODUÇÃO DO AUTOR - LINK BRUTO GARANTIDO -->
+    <!-- ÁUDIO DE INTRODUÇÃO DO AUTOR (LINK CORRIGIDO EXATO DO SEU GITHUB) -->
     <div class="intro-audio-box">
       <label>🎧 Ouça a Introdução do Autor</label>
-      <audio id="author-audio" controls preload="auto" src="https://raw.githubusercontent.com/franciscoleonardho-sys/o-que-voce-nao-ve/main/Introducao_do_autor.MP3" onplay="playClickSound()"></audio>
+      <audio id="author-audio" controls preload="auto" src="https://raw.githubusercontent.com/franciscoleonardho-sys/o-que-voce-nao-ve/main/Introdu%C3%A7%C3%A3o%20do%20autor.mp3"></audio>
     </div>
 
     <button class="btn-enter" onclick="enterExhibition()">Entrar na Exposição</button>
@@ -447,7 +438,7 @@
 
   <main class="gallery-grid" id="gallery"></main>
 
-  <!-- RODAPÉ AUTORAL REESTILIZADO -->
+  <!-- RODAPÉ AUTORAL -->
   <footer>
     <p><strong>O QUE VOCÊ NÃO VÊ</strong> — Exposição Digital Fotográfica & Sonora</p>
     <p>Trabalho de Conclusão de Curso (TCC) em <strong>Rádio e TV</strong></p>
@@ -480,22 +471,13 @@
   <script>
     const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQPvjhGZgcE7oZbDvbS8z7Zw4LeqBvRP6Qk7ppQPhfayl40_2fG21MgiNtVtoJNYsujOiEXtQ5W3SCw/pub?output=csv";
 
-    // SOM DE CLIQUE SUAVE
-    const clickSound = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_c31a7888b6.mp3?filename=click-button.mp3");
-    clickSound.volume = 0.3;
-
-    function playClickSound() {
-      clickSound.currentTime = 0;
-      clickSound.play().catch(() => {});
-    }
-
-    // PLAYLIST COM 5 MÚSICAS EM LOOP CONTINUO
+    // PLAYLIST DE 5 MÚSICAS AMBIENTAIS INSTRUMENTAIS EM LOOP
     const playlist = [
-      "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=ambient-piano-amp-strings-10711.mp3",
-      "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a8c1e2.mp3?filename=ambient-relaxation.mp3",
-      "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=soft-piano-background.mp3",
-      "https://cdn.pixabay.com/download/audio/2021/11/25/audio_94fa22a106.mp3?filename=deep-ambient.mp3",
-      "https://cdn.pixabay.com/download/audio/2022/02/07/audio_13a303dd50.mp3?filename=meditation-ambient-piano.mp3"
+      "https://raw.githubusercontent.com/rafaelreis-hotmart/Audio-Samples/main/ambient-1.mp3",
+      "https://raw.githubusercontent.com/rafaelreis-hotmart/Audio-Samples/main/ambient-2.mp3",
+      "https://raw.githubusercontent.com/rafaelreis-hotmart/Audio-Samples/main/ambient-3.mp3",
+      "https://actions.google.com/sounds/v1/ambiences/outdoor_park_gentle_breeze.ogg",
+      "https://actions.google.com/sounds/v1/ambiences/forest_morning.ogg"
     ];
 
     let currentTrackIndex = 0;
@@ -506,12 +488,12 @@
       music.load();
     }
 
-    // LISTENER QUE MUTA DE MÚSICA AUTOMATICAMENTE
-    music.addEventListener('ended', function() {
+    // A CADA FIM DE MÚSICA, PASSA PARA A PRÓXIMA AUTOMÁTICAMENTE (LOOP INFINITO)
+    music.onended = function() {
       currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
       loadTrack(currentTrackIndex);
-      music.play();
-    });
+      music.play().catch(e => console.log("Aguardando interação"));
+    };
 
     music.ontimeupdate = () => {
       if (music.duration) {
@@ -562,7 +544,6 @@
         const card = document.createElement('div');
         card.className = `photo-card ${item.destaque ? 'highlight' : ''}`;
         card.onclick = () => {
-          playClickSound();
           openLightbox(item.url, item.titulo, item.desc);
         };
         card.innerHTML = `
@@ -588,7 +569,6 @@
     }
 
     function enterExhibition() {
-      playClickSound();
       document.getElementById('welcome-screen').classList.add('hidden');
       
       const authorAudio = document.getElementById('author-audio');
@@ -596,16 +576,14 @@
 
       music.play().then(() => {
         document.getElementById('play-pause-btn').innerText = '⏸';
-      }).catch(e => console.log("Aguardando ação do usuário para áudio"));
+      }).catch(e => console.log("Clique no play para ouvir"));
     }
 
     function openWelcomeScreen() {
-      playClickSound();
       document.getElementById('welcome-screen').classList.remove('hidden');
     }
 
     function toggleMusic() {
-      playClickSound();
       if (music.paused) {
         music.play();
         document.getElementById('play-pause-btn').innerText = '⏸';
@@ -635,7 +613,6 @@
     }
 
     function closeLightbox() {
-      playClickSound();
       document.getElementById('lightbox').classList.remove('active');
     }
 
