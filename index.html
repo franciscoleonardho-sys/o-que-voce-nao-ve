@@ -451,14 +451,14 @@
     <p style="margin-top: 15px; font-size: 0.8rem; opacity: 0.4;">© Todos os direitos reservados aos autores e colaboradores.</p>
   </footer>
 
-  <!-- PLAYER DE MÚSICA DE FUNDO -->
+  <!-- PLAYER DE MÚSICA DE FUNDO COM LOOP INFINITO ATIVADO -->
   <div class="audio-player-container">
     <button class="player-btn" id="play-pause-btn" onclick="toggleMusic()">▶</button>
     <div class="progress-bar" onclick="seekMusic(event)">
       <div class="progress-fill" id="music-progress"></div>
     </div>
     <input type="range" id="vol-slider" class="volume-control" min="0" max="1" step="0.05" value="0.15" onchange="setVolume(this.value)">
-    <audio id="bg-music" preload="auto"></audio>
+    <audio id="bg-music" src="https://upload.wikimedia.org/wikipedia/commons/2/22/Gymnopedie_No_1.ogg" loop preload="auto"></audio>
   </div>
 
   <!-- LIGHTBOX -->
@@ -476,32 +476,10 @@
   <script>
     const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQPvjhGZgcE7oZbDvbS8z7Zw4LeqBvRP6Qk7ppQPhfayl40_2fG21MgiNtVtoJNYsujOiEXtQ5W3SCw/pub?output=csv";
 
-    // PLAYLIST DE 5 FAIXAS INSTRUMENTAIS SUAVES EM CDN GLOBAL
-    const playlist = [
-      "https://cdn.freesound.org/previews/612/612610_5674468-lq.mp3",
-      "https://cdn.freesound.org/previews/554/554841_11861866-lq.mp3",
-      "https://cdn.freesound.org/previews/416/416837_5121236-lq.mp3",
-      "https://cdn.freesound.org/previews/463/463200_9281371-lq.mp3",
-      "https://cdn.freesound.org/previews/518/518850_11139414-lq.mp3"
-    ];
-
-    let currentTrackIndex = 0;
     const music = document.getElementById('bg-music');
     
     // DEFINE O VOLUME INICIAL DA MÚSICA DE FUNDO PARA 15% (BAIXINHO)
     music.volume = 0.15;
-
-    function loadTrack(index) {
-      music.src = playlist[index];
-      music.load();
-    }
-
-    // CUIDA DO ENCADEAMENTO DA PLAYLIST E LOOP INFINITO
-    music.addEventListener('ended', function() {
-      currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
-      loadTrack(currentTrackIndex);
-      music.play().catch(e => console.log("Aguardando interação"));
-    });
 
     music.ontimeupdate = () => {
       if (music.duration) {
@@ -582,8 +560,7 @@
       const authorAudio = document.getElementById('author-audio');
       if (authorAudio) authorAudio.pause();
 
-      // INICIA A TRILHA DE FUNDO AUTOMATICAMENTE APÓS O CLIQUE
-      loadTrack(currentTrackIndex);
+      // INICIA A TRILHA EM LOOP AUTOMATICAMENTE
       music.play().then(() => {
         document.getElementById('play-pause-btn').innerText = '⏸';
       }).catch(e => {
