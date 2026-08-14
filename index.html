@@ -5,11 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>O que você não vê - Exposição Digital</title>
   
+  <!-- SDK do Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
     :root {
       --bg-color: #080808;
       --card-bg: #121212;
@@ -19,96 +24,619 @@
       --font-main: 'Helvetica Neue', Arial, sans-serif;
     }
 
-    body { background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-main); overflow-x: hidden; }
-
-    /* AJUSTE DE ESPAÇAMENTO NA TELA DE ENTRADA */
-    #welcome-screen {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: linear-gradient(rgba(0,0,0,0.88), rgba(0,0,0,0.94)), url('https://cdn.jsdelivr.net/gh/franciscoleonardho-sys/o-que-voce-nao-ve@main/Janela%20no%20fim%20da%20tarde.jpg') center/cover no-repeat;
-      display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
-      padding: 30px 20px; z-index: 1000; overflow-y: auto; transition: opacity 0.8s ease, visibility 0.8s;
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: var(--font-main);
+      overflow-x: hidden;
     }
 
-    #welcome-screen.hidden { opacity: 0; visibility: hidden; }
+    /* TELA DE ENTRADA ENXUTA COM ESPAÇAMENTO AJUSTADO */
+    #welcome-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(rgba(0,0,0,0.88), rgba(0,0,0,0.94)), url('https://cdn.jsdelivr.net/gh/franciscoleonardho-sys/o-que-voce-nao-ve@main/Janela%20no%20fim%20da%20tarde.jpg') center/cover no-repeat;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 30px 20px;
+      z-index: 1000;
+      overflow-y: auto;
+      transition: opacity 0.8s ease, visibility 0.8s;
+    }
+
+    #welcome-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
 
     #welcome-screen h1 {
-      font-family: 'Arial Narrow', sans-serif; font-size: 2.4rem; font-weight: 700; letter-spacing: 3px;
-      margin-bottom: 45px; /* Aumentei aqui para afastar o título */
-      color: #fff; text-transform: uppercase; display: inline-block; transform: scaleY(1.7); transform-origin: center;
+      font-family: 'Arial Narrow', sans-serif;
+      font-size: 2.4rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      margin-bottom: 45px; /* Bom respiro para afastar o título da foto */
+      color: #fff;
+      text-transform: uppercase;
+      display: inline-block;
+      transform: scaleY(1.7);
+      transform-origin: center;
     }
 
     .team-container {
-      display: flex; flex-direction: column; align-items: center;
-      margin-bottom: 30px; /* Espaço para o áudio */
-      max-width: 500px; width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 25px;
+      max-width: 500px;
+      width: 100%;
     }
 
     .team-photo {
-      width: 120px; height: 120px; border-radius: 50%; object-fit: cover;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
       border: 2px solid var(--accent-color);
-      margin-bottom: 25px; /* Aumentei o respiro abaixo da foto */
+      margin-bottom: 25px; /* Respiro abaixo da foto */
       box-shadow: 0 0 25px rgba(201, 160, 80, 0.2);
     }
 
-    .credits-group { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 25px; }
-    .credit-block { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-    .credit-title { color: var(--accent-color); font-weight: 400; font-size: 0.95rem; letter-spacing: 0.5px; }
-    .credit-desc { color: var(--text-color); font-weight: 300; font-size: 0.9rem; }
+    .credits-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 25px;
+    }
 
-    .intro-audio-box { margin-bottom: 25px; display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; max-width: 320px; }
-    .intro-audio-box label { font-size: 0.8rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent-color); }
-    .intro-audio-box audio { height: 40px; accent-color: var(--accent-color); width: 100%; }
+    .credit-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .credit-title {
+      color: var(--accent-color);
+      font-weight: 400;
+      font-size: 0.95rem;
+      letter-spacing: 0.5px;
+    }
+
+    .credit-desc {
+      color: var(--text-color);
+      font-weight: 300;
+      font-size: 0.9rem;
+    }
+
+    .intro-audio-box {
+      margin-bottom: 25px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .intro-audio-box label {
+      font-size: 0.8rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--accent-color);
+    }
+
+    .intro-audio-box audio {
+      height: 40px;
+      accent-color: var(--accent-color);
+      width: 100%;
+    }
 
     .btn-enter {
-      padding: 14px 40px; background-color: transparent; border: 1px solid var(--accent-color); color: var(--accent-color);
-      font-size: 0.9rem; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; border-radius: 2px;
+      padding: 14px 40px;
+      background-color: transparent;
+      border: 1px solid var(--accent-color);
+      color: var(--accent-color);
+      font-size: 0.9rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-radius: 2px;
     }
-    .btn-enter:hover { background-color: var(--accent-color); color: #000; box-shadow: 0 0 20px rgba(201, 160, 80, 0.4); }
 
-    /* HEADER */
-    header { padding: 50px 20px 20px; text-align: center; }
-    header h2 { font-family: 'Arial Narrow', sans-serif; font-size: 2.4rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #ffffff; margin: 0; display: inline-block; transform: scaleY(1.7); transform-origin: center; }
-    .header-subtitles { margin-top: 25px; display: flex; flex-direction: column; gap: 8px; align-items: center; }
-    header p { color: var(--accent-color); font-size: 1.05rem; letter-spacing: 0.8px; font-weight: 300; }
+    .btn-enter:hover {
+      background-color: var(--accent-color);
+      color: #000;
+      box-shadow: 0 0 20px rgba(201, 160, 80, 0.4);
+    }
 
-    /* BOTÃO FLUTUANTE */
-    .btn-floating-home { position: fixed; top: 18px; left: 18px; width: 44px; height: 44px; background: rgba(18, 18, 18, 0.45); backdrop-filter: blur(10px); border: 1px solid rgba(201, 160, 80, 0.6); color: var(--accent-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; z-index: 600; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); outline: none; }
-    .btn-floating-home svg { width: 20px; height: 20px; fill: none; stroke: var(--accent-color); stroke-width: 2; }
+    /* HEADER & TÍTULO PRINCIPAL DA EXPOSIÇÃO */
+    header {
+      padding: 50px 20px 20px;
+      text-align: center;
+    }
 
-    /* GALERIA & RODAPÉ E RESTANTE DO CÓDIGO (MANTIDOS) */
-    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 40px; max-width: 1100px; margin: 0 auto; padding: 30px 20px 40px; }
-    .photo-card { background: var(--card-bg); border-radius: 4px; overflow: hidden; cursor: pointer; transition: transform 0.3s ease; border: 1px solid #1a1a1a; display: flex; flex-direction: column; position: relative; }
-    .photo-card img { width: 100%; height: 300px; object-fit: cover; }
-    .photo-info { padding: 22px; display: flex; flex-direction: column; flex-grow: 1; }
-    .photo-title { font-size: 1.15rem; color: var(--accent-color); }
-    .photo-desc { font-size: 0.95rem; color: var(--text-color); margin-bottom: 15px; }
+    header h2 {
+      font-family: 'Arial Narrow', sans-serif;
+      font-size: 2.4rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #ffffff;
+      margin: 0;
+      display: inline-block;
+      transform: scaleY(1.7);
+      transform-origin: center;
+    }
 
-    footer { position: relative; padding: 40px 20px 100px; text-align: center; background: linear-gradient(180deg, rgba(8,8,8,0) 0%, rgba(18,18,22,0.95) 100%); backdrop-filter: blur(12px); color: var(--text-muted); font-size: 0.9rem; margin-top: 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-    .footer-block { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-    .footer-title { color: var(--accent-color); font-weight: 400; font-size: 0.95rem; }
-    .footer-desc { color: var(--text-color); font-weight: 300; font-size: 0.9rem; }
-    
-    .audio-player-container { position: fixed; bottom: 25px; right: 25px; background: rgba(18, 18, 18, 0.75); backdrop-filter: blur(12px); border: 1px solid #333; border-radius: 40px; padding: 12px 24px; display: flex; align-items: center; gap: 15px; z-index: 500; }
+    .header-subtitles {
+      margin-top: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+    }
+
+    header p {
+      color: var(--accent-color);
+      font-size: 1.05rem;
+      letter-spacing: 0.8px;
+      font-weight: 300;
+    }
+
+    /* BOTÃO FLUTUANTE DE INÍCIO */
+    .btn-floating-home {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      width: 44px;
+      height: 44px;
+      background: rgba(18, 18, 18, 0.45);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(201, 160, 80, 0.6);
+      color: var(--accent-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 600;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-floating-home svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: var(--accent-color);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: transform 0.2s ease;
+    }
+
+    .btn-floating-home:hover, .btn-floating-home:active {
+      background: rgba(201, 160, 80, 0.25);
+      border-color: var(--accent-color);
+      box-shadow: 0 0 15px rgba(201, 160, 80, 0.5);
+    }
+
+    /* GRADE DA GALERIA */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 30px 20px 40px;
+    }
+
+    .photo-card {
+      background: var(--card-bg);
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid #1a1a1a;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .photo-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.8);
+      border-color: #333;
+    }
+
+    .photo-card img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      display: block;
+      background-color: #000;
+    }
+
+    .photo-card.highlight {
+      grid-column: 1 / -1;
+      max-width: 850px;
+      width: 100%;
+      margin: 20px auto;
+      border: 1px solid var(--accent-color);
+      box-shadow: 0 0 35px rgba(201, 160, 80, 0.2);
+    }
+
+    .photo-card.highlight img {
+      height: 500px;
+      object-fit: cover;
+    }
+
+    .photo-info {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .photo-title {
+      font-size: 1.15rem;
+      font-weight: 400;
+      margin-bottom: 10px;
+      color: var(--accent-color);
+    }
+
+    .photo-card.highlight .photo-title {
+      font-size: 1.4rem;
+    }
+
+    .photo-desc {
+      font-size: 0.95rem;
+      color: var(--text-color);
+      line-height: 1.6;
+      font-weight: 300;
+      margin-bottom: 15px;
+    }
+
+    .card-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding-top: 12px;
+      margin-top: auto;
+    }
+
+    .btn-like {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+      transition: color 0.2s, transform 0.1s ease;
+      outline: none;
+    }
+
+    .heart-svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 2;
+      transition: all 0.3s ease;
+    }
+
+    .btn-like.liked .heart-svg {
+      fill: var(--accent-color);
+      stroke: var(--accent-color);
+      transform: scale(1.15);
+    }
+
+    .btn-like.liked {
+      color: var(--accent-color);
+    }
+
+    /* RODAPÉ COMPLETO */
+    footer {
+      position: relative;
+      padding: 40px 20px 100px;
+      text-align: center;
+      background: linear-gradient(180deg, rgba(8,8,8,0) 0%, rgba(18,18,22,0.95) 100%);
+      backdrop-filter: blur(12px);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .footer-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .footer-title {
+      color: var(--accent-color);
+      font-weight: 400;
+      font-size: 0.95rem;
+      letter-spacing: 0.5px;
+    }
+
+    .footer-desc {
+      color: var(--text-color);
+      font-weight: 300;
+      font-size: 0.9rem;
+    }
+
+    /* PLAYER DE MÚSICA */
+    .audio-player-container {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: rgba(18, 18, 18, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid #333;
+      border-radius: 40px;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      z-index: 500;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+
+    .player-btn {
+      background: none;
+      border: none;
+      color: var(--accent-color);
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      outline: none;
+    }
+
+    .progress-bar {
+      width: 90px;
+      height: 4px;
+      background: #333;
+      border-radius: 2px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      background: var(--accent-color);
+      border-radius: 2px;
+    }
+
+    .volume-control {
+      width: 55px;
+      accent-color: var(--accent-color);
+    }
+
+    /* LIGHTBOX */
+    .lightbox {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.96);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .lightbox.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .lightbox-content {
+      max-width: 800px;
+      width: 100%;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+
+    .lightbox-img {
+      max-width: 100%;
+      max-height: 50vh;
+      object-fit: contain;
+      box-shadow: 0 0 30px rgba(0,0,0,0.9);
+      border-radius: 4px;
+    }
+
+    .lightbox-caption {
+      margin-top: 20px;
+      text-align: center;
+      width: 100%;
+      max-width: 650px;
+    }
+
+    .lightbox-caption h3 {
+      font-size: 1.3rem;
+      color: var(--accent-color);
+      margin-bottom: 8px;
+      font-weight: 300;
+    }
+
+    .lightbox-caption p {
+      font-size: 0.95rem;
+      color: var(--text-color);
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    .comments-section {
+      width: 100%;
+      max-width: 650px;
+      margin-top: 25px;
+      border-top: 1px solid #222;
+      padding-top: 20px;
+      text-align: left;
+    }
+
+    .comments-section h4 {
+      font-size: 0.95rem;
+      color: var(--accent-color);
+      margin-bottom: 15px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .comments-list {
+      max-height: 180px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-right: 5px;
+    }
+
+    .comment-item {
+      background: #111;
+      padding: 12px 14px;
+      border-radius: 4px;
+      border-left: 2px solid var(--accent-color);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .comment-text {
+      font-size: 0.92rem;
+      color: var(--text-color);
+      line-height: 1.4;
+    }
+
+    .comment-author {
+      font-size: 0.78rem;
+      color: var(--accent-color);
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .comment-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .comment-form input, .comment-form textarea {
+      background: #181818;
+      border: 1px solid #333;
+      color: #fff;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.85rem;
+    }
+
+    .comment-form input:focus, .comment-form textarea:focus {
+      outline: none;
+      border-color: var(--accent-color);
+    }
+
+    .btn-send-comment {
+      align-self: flex-end;
+      background: var(--accent-color);
+      color: #000;
+      border: none;
+      padding: 8px 20px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      border-radius: 2px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .close-lightbox {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      color: #fff;
+      font-size: 2.5rem;
+      cursor: pointer;
+      font-weight: 300;
+    }
   </style>
 </head>
 <body>
-  <button class="btn-floating-home" onclick="openWelcomeScreen()" title="Início">
-    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+
+  <!-- BOTÃO FLUTUANTE DE INÍCIO -->
+  <button class="btn-floating-home" onclick="openWelcomeScreen()" title="Início" aria-label="Início">
+    <svg viewBox="0 0 24 24">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+      <polyline points="9 22 9 12 15 12 15 22"></polyline>
+    </svg>
   </button>
 
+  <!-- TELA DE ENTRADA RESTAURADA E COM ESPAÇAMENTO -->
   <div id="welcome-screen">
     <h1>O que você não vê</h1>
+
     <div class="team-container">
       <img src="https://cdn.jsdelivr.net/gh/franciscoleonardho-sys/o-que-voce-nao-ve@main/Francisco%20Leonardo.jpeg" alt="Francisco Leonardo" class="team-photo">
+      
       <div class="credits-group">
-        <div class="credit-block"><span class="credit-title">Projeto Integrador</span><span class="credit-desc">O que você não vê</span></div>
-        <div class="credit-block"><span class="credit-title">Autor / Curadoria</span><span class="credit-desc">Francisco Leonardo | Chicão</span></div>
+        <div class="credit-block">
+          <span class="credit-title">Projeto Integrador</span>
+          <span class="credit-desc">O que você não vê</span>
+        </div>
+
+        <div class="credit-block">
+          <span class="credit-title">Autor / Curadoria</span>
+          <span class="credit-desc">Francisco Leonardo | Chicão</span>
+        </div>
       </div>
     </div>
+
     <div class="intro-audio-box">
       <label>🎧 Ouça a Introdução do Autor</label>
-      <audio id="author-audio" controls preload="metadata"><source src="https://cdn.jsdelivr.net/gh/franciscoleonardho-sys/o-que-voce-nao-ve@main/Introdu%C3%A7%C3%A3o%20do%20autor.mp3" type="audio/mpeg"></audio>
+      <audio id="author-audio" controls preload="metadata">
+        <source src="https://cdn.jsdelivr.net/gh/franciscoleonardho-sys/o-que-voce-nao-ve@main/Introdu%C3%A7%C3%A3o%20do%20autor.mp3" type="audio/mpeg">
+      </audio>
     </div>
+
     <button class="btn-enter" onclick="enterExhibition()">Entrar na Exposição</button>
   </div>
 
@@ -122,17 +650,305 @@
 
   <main class="gallery-grid" id="gallery"></main>
 
+  <!-- RODAPÉ COMPLETO -->
   <footer>
-    <div class="footer-block"><span class="footer-title">Projeto Integrador</span><span class="footer-desc">O que você não vê</span></div>
-    <div class="footer-block"><span class="footer-title">Curso</span><span class="footer-desc">Rádio, TV e Internet</span></div>
-    <div class="footer-block"><span class="footer-title">Autor/Curadoria</span><span class="footer-desc">Francisco Leonardo | Chicão</span></div>
-    <div class="footer-block"><span class="footer-title">Fotografia e Produção (edição)</span><span class="footer-desc">Francisco Leonardo | Chicão</span></div>
-    <div class="footer-block" style="margin-top: 5px;"><span class="footer-desc" style="font-size: 0.85rem; opacity: 0.7;">2027.2</span></div>
+    <div class="footer-block">
+      <span class="footer-title">Projeto Integrador</span>
+      <span class="footer-desc">O que você não vê</span>
+    </div>
+    
+    <div class="footer-block">
+      <span class="footer-title">Curso</span>
+      <span class="footer-desc">Rádio, TV e Internet</span>
+    </div>
+
+    <div class="footer-block">
+      <span class="footer-title">Autor/Curadoria</span>
+      <span class="footer-desc">Francisco Leonardo | Chicão</span>
+    </div>
+
+    <div class="footer-block">
+      <span class="footer-title">Fotografia e Produção (edição)</span>
+      <span class="footer-desc">Francisco Leonardo | Chicão</span>
+    </div>
+
+    <div class="footer-block" style="margin-top: 5px;">
+      <span class="footer-desc" style="font-size: 0.85rem; opacity: 0.7;">2027.2</span>
+    </div>
+
+    <p style="margin-top: 8px; font-size: 0.75rem; opacity: 0.4;">© Todos os direitos reservados aos autores e colaboradores.</p>
   </footer>
 
+  <!-- PLAYER DE MÚSICA -->
+  <div class="audio-player-container">
+    <button class="player-btn" id="play-pause-btn" onclick="toggleMusic()">▶</button>
+    <div class="progress-bar" onclick="seekMusic(event)">
+      <div class="progress-fill" id="music-progress"></div>
+    </div>
+    <input type="range" id="vol-slider" class="volume-control" min="0" max="1" step="0.05" value="0.2" onchange="setVolume(this.value)">
+    <audio id="bg-music" src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=piano-ambient-112199.mp3" loop preload="auto"></audio>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <span class="close-lightbox">&times;</span>
+    <div class="lightbox-content" onclick="event.stopPropagation()">
+      <img id="lightbox-img" src="" alt="">
+      <div class="lightbox-caption">
+        <h3 id="lightbox-title"></h3>
+        <p id="lightbox-desc"></p>
+      </div>
+
+      <div class="comments-section">
+        <h4>Comentários e Reflexões</h4>
+        <div class="comments-list" id="comments-list">
+          <p style="font-size: 0.8rem; color: #666;">Carregando comentários...</p>
+        </div>
+
+        <form class="comment-form" onsubmit="submitComment(event)">
+          <input type="text" id="comment-author-input" placeholder="Seu Nome ou Apelido" required>
+          <textarea id="comment-text-input" rows="2" placeholder="O que esta imagem fez você sentir?" required></textarea>
+          <button type="submit" class="btn-send-comment">Comentar</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
   <script>
-    function enterExhibition() { document.getElementById('welcome-screen').classList.add('hidden'); }
-    function openWelcomeScreen() { document.getElementById('welcome-screen').classList.remove('hidden'); }
+    const firebaseConfig = {
+      apiKey: "SUA_API_KEY",
+      authDomain: "SEU_PROJECT_ID.firebaseapp.com",
+      databaseURL: "https://SEU_PROJECT_ID-default-rtdb.firebaseio.com",
+      projectId: "SEU_PROJECT_ID",
+      storageBucket: "SEU_PROJECT_ID.appspot.com",
+      messagingSenderId: "SEU_ID",
+      appId: "SEU_APP_ID"
+    };
+
+    let db = null;
+    try {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.database();
+    } catch(e) {
+      console.log("Firebase não configurado ainda.");
+    }
+
+    const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQPvjhGZgcE7oZbDvbS8z7Zw4LeqBvRP6Qk7ppQPhfayl40_2fG21MgiNtVtoJNYsujOiEXtQ5W3SCw/pub?output=csv";
+    
+    let currentActivePhotoId = null;
+    const music = document.getElementById('bg-music');
+    music.volume = 0.2;
+
+    music.ontimeupdate = () => {
+      if (music.duration) {
+        const pct = (music.currentTime / music.duration) * 100;
+        document.getElementById('music-progress').style.width = pct + '%';
+      }
+    };
+
+    function parseCSV(text) {
+      const lines = text.split(/\r\n|\n/);
+      const result = [];
+      for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        const row = [];
+        let insideQuotes = false;
+        let entry = '';
+        for (let char of lines[i]) {
+          if (char === '"') {
+            insideQuotes = !insideQuotes;
+          } else if (char === ',' && !insideQuotes) {
+            row.push(entry.trim());
+            entry = '';
+          } else {
+            entry += char;
+          }
+        }
+        row.push(entry.trim());
+        if (row.length >= 4) {
+          const destaqueValor = row[5] ? row[5].replace(/^"|"$/g, '').trim().toLowerCase() : 'nao';
+          
+          result.push({
+            id: 'foto_' + row[0],
+            ordem: row[0],
+            titulo: row[1].replace(/^"|"$/g, ''),
+            url: row[2].replace(/^"|"$/g, ''),
+            desc: row[3].replace(/^"|"$/g, ''),
+            categoria: row[4] ? row[4].replace(/^"|"$/g, '') : '',
+            destaque: destaqueValor === 'sim'
+          });
+        }
+      }
+      return result;
+    }
+
+    function renderGallery(items) {
+      const gallery = document.getElementById('gallery');
+      gallery.innerHTML = '';
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = `photo-card ${item.destaque ? 'highlight' : ''}`;
+        
+        card.innerHTML = `
+          <img src="${item.url}" alt="${item.titulo}" loading="lazy" onclick="openLightbox('${item.id}', '${item.url}', '${item.titulo}', '${item.desc}')" onerror="this.src='https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=500&auto=format&fit=crop'">
+          <div class="photo-info">
+            <div class="photo-title" onclick="openLightbox('${item.id}', '${item.url}', '${item.titulo}', '${item.desc}')">${item.titulo} ${item.destaque ? '✦' : ''}</div>
+            <div class="photo-desc">${item.desc}</div>
+            <div class="card-actions">
+              <button class="btn-like" id="like-btn-${item.id}" onclick="likePhoto('${item.id}', event)">
+                <svg class="heart-svg" viewBox="0 0 24 24">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                <span id="like-count-${item.id}">0</span>
+              </button>
+              <span style="font-size: 0.8rem; color: #555; cursor: pointer;" onclick="openLightbox('${item.id}', '${item.url}', '${item.titulo}', '${item.desc}')">💬 Comentar</span>
+            </div>
+          </div>
+        `;
+        gallery.appendChild(card);
+        listenLikes(item.id);
+      });
+    }
+
+    function likePhoto(photoId, event) {
+      event.stopPropagation();
+      const countEl = document.getElementById(`like-count-${photoId}`);
+      const btnEl = document.getElementById(`like-btn-${photoId}`);
+      let currentLikes = parseInt(countEl.innerText) || 0;
+
+      if (btnEl) btnEl.classList.toggle('liked');
+
+      if (db) {
+        db.ref(`likes/${photoId}`).transaction((likes) => (likes || 0) + 1);
+      } else {
+        countEl.innerText = currentLikes + 1;
+      }
+    }
+
+    function listenLikes(photoId) {
+      if (!db) return;
+      db.ref(`likes/${photoId}`).on('value', (snapshot) => {
+        const val = snapshot.val() || 0;
+        const el = document.getElementById(`like-count-${photoId}`);
+        if (el) el.innerText = val;
+      });
+    }
+
+    function loadComments(photoId) {
+      const listEl = document.getElementById('comments-list');
+      listEl.innerHTML = '';
+
+      if (!db) {
+        listEl.innerHTML = '<p style="font-size: 0.8rem; color: #666;">Conecte o Firebase para carregar comentários em tempo real.</p>';
+        return;
+      }
+
+      db.ref(`comments/${photoId}`).on('value', (snapshot) => {
+        listEl.innerHTML = '';
+        const data = snapshot.val();
+        if (!data) {
+          listEl.innerHTML = '<p style="font-size: 0.8rem; color: #666;">Seja o primeiro a deixar uma reflexão sobre esta foto.</p>';
+          return;
+        }
+
+        Object.values(data).forEach(c => {
+          const item = document.createElement('div');
+          item.className = 'comment-item';
+          item.innerHTML = `
+            <div class="comment-text">${escapeHtml(c.text)}</div>
+            <div class="comment-author">— ${escapeHtml(c.author)}</div>
+          `;
+          listEl.appendChild(item);
+        });
+        listEl.scrollTop = listEl.scrollHeight;
+      });
+    }
+
+    function submitComment(e) {
+      e.preventDefault();
+      const authorInput = document.getElementById('comment-author-input');
+      const textInput = document.getElementById('comment-text-input');
+
+      if (!authorInput.value.trim() || !textInput.value.trim()) return;
+
+      if (db && currentActivePhotoId) {
+        db.ref(`comments/${currentActivePhotoId}`).push({
+          author: authorInput.value.trim(),
+          text: textInput.value.trim(),
+          timestamp: Date.now()
+        });
+      }
+
+      textInput.value = '';
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    async function fetchFromSheets() {
+      try {
+        const response = await fetch(GOOGLE_SHEETS_CSV_URL);
+        const csvText = await response.text();
+        const items = parseCSV(csvText);
+        renderGallery(items);
+      } catch (err) {
+        console.error("Erro ao carregar a planilha:", err);
+      }
+    }
+
+    function enterExhibition() {
+      document.getElementById('welcome-screen').classList.add('hidden');
+      const authorAudio = document.getElementById('author-audio');
+      if (authorAudio) authorAudio.pause();
+
+      music.play().then(() => {
+        document.getElementById('play-pause-btn').innerText = '❚❚';
+      }).catch(e => console.log("Erro de reprodução:", e));
+    }
+
+    function openWelcomeScreen() {
+      document.getElementById('welcome-screen').classList.remove('hidden');
+    }
+
+    function toggleMusic() {
+      if (music.paused) {
+        music.play();
+        document.getElementById('play-pause-btn').innerText = '❚❚';
+      } else {
+        music.pause();
+        document.getElementById('play-pause-btn').innerText = '▶';
+      }
+    }
+
+    function setVolume(val) {
+      music.volume = parseFloat(val);
+    }
+
+    function seekMusic(e) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const pos = (e.clientX - rect.left) / rect.width;
+      if (music.duration) {
+        music.currentTime = pos * music.duration;
+      }
+    }
+
+    function openLightbox(id, url, title, desc) {
+      currentActivePhotoId = id;
+      document.getElementById('lightbox-img').src = url;
+      document.getElementById('lightbox-title').innerText = title;
+      document.getElementById('lightbox-desc').innerText = desc;
+      document.getElementById('lightbox').classList.add('active');
+
+      loadComments(id);
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('active');
+    }
+
+    fetchFromSheets();
   </script>
 </body>
 </html>
