@@ -451,14 +451,14 @@
     <p style="margin-top: 15px; font-size: 0.8rem; opacity: 0.4;">© Todos os direitos reservados aos autores e colaboradores.</p>
   </footer>
 
-  <!-- PLAYER DE MÚSICA DE FUNDO COM LOOP INFINITO ATIVADO -->
+  <!-- PLAYER DE MÚSICA DE FUNDO APONTANDO PARA O SEU GITHUB -->
   <div class="audio-player-container">
     <button class="player-btn" id="play-pause-btn" onclick="toggleMusic()">▶</button>
     <div class="progress-bar" onclick="seekMusic(event)">
       <div class="progress-fill" id="music-progress"></div>
     </div>
     <input type="range" id="vol-slider" class="volume-control" min="0" max="1" step="0.05" value="0.15" onchange="setVolume(this.value)">
-    <audio id="bg-music" src="https://upload.wikimedia.org/wikipedia/commons/2/22/Gymnopedie_No_1.ogg" loop preload="auto"></audio>
+    <audio id="bg-music" src="https://cdn.jsdelivr.net/gh/franciscoleonardho-sys/o-que-voce-nao-ve@main/trilha.mp3" loop preload="auto"></audio>
   </div>
 
   <!-- LIGHTBOX -->
@@ -478,7 +478,7 @@
 
     const music = document.getElementById('bg-music');
     
-    // DEFINE O VOLUME INICIAL DA MÚSICA DE FUNDO PARA 15% (BAIXINHO)
+    // VOLUME FIXADO EM 15% (BAIXINHO)
     music.volume = 0.15;
 
     music.ontimeupdate = () => {
@@ -560,11 +560,11 @@
       const authorAudio = document.getElementById('author-audio');
       if (authorAudio) authorAudio.pause();
 
-      // INICIA A TRILHA EM LOOP AUTOMATICAMENTE
+      // INICIA A TRILHA AMBIENTE AUTOMATICAMENTE APÓS O CLIQUE
       music.play().then(() => {
         document.getElementById('play-pause-btn').innerText = '⏸';
       }).catch(e => {
-        console.log("Ação manual necessária no player");
+        console.log("Aguardando ação no player:", e);
       });
     }
 
