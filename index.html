@@ -31,7 +31,7 @@
       overflow-x: hidden;
     }
 
-    /* TELA DE ENTRADA */
+    /* TELA DE ENTRADA ENXUTA */
     #welcome-screen {
       position: fixed;
       top: 0;
@@ -68,17 +68,6 @@
       transform-origin: center;
     }
 
-    #welcome-screen .sub-title {
-      max-width: 480px;
-      width: 90%;
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      line-height: 1.6;
-      margin: 15px auto 25px auto;
-      font-weight: 300;
-      padding: 0 10px;
-    }
-
     .team-container {
       display: flex;
       flex-direction: column;
@@ -98,12 +87,11 @@
       box-shadow: 0 0 25px rgba(201, 160, 80, 0.2);
     }
 
-    /* BLOCOS HIERÁRQUICOS DA TELA DE ENTRADA */
     .credits-group {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       margin-bottom: 25px;
     }
 
@@ -169,7 +157,7 @@
       box-shadow: 0 0 20px rgba(201, 160, 80, 0.4);
     }
 
-    /* HEADER & TÍTULO PRINCIPAL DA EXPOSIÇÃO */
+    /* HEADER & TÍTULO PRINCIPAL DA EXPOSIÇÃO COM TEXTOS UNIFICADOS EM AMARELO */
     header {
       padding: 50px 20px 20px;
       text-align: center;
@@ -188,11 +176,18 @@
       transform-origin: center;
     }
 
+    .header-subtitles {
+      margin-top: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+    }
+
     header p {
       color: var(--accent-color);
-      margin-top: 25px;
-      font-size: 1.1rem;
-      letter-spacing: 1px;
+      font-size: 1.05rem;
+      letter-spacing: 0.8px;
       font-weight: 300;
     }
 
@@ -354,7 +349,7 @@
       color: var(--accent-color);
     }
 
-    /* RODAPÉ AJUSTADO */
+    /* RODAPÉ COMPLETO */
     footer {
       position: relative;
       padding: 40px 20px 100px;
@@ -615,15 +610,13 @@
     </svg>
   </button>
 
-  <!-- TELA DE ENTRADA -->
+  <!-- TELA DE ENTRADA ENXUTA -->
   <div id="welcome-screen">
     <h1>O que você não vê</h1>
-    <p class="sub-title">Uma experiência de pausa, observação e escuta. Coloque os fones para uma melhor imersão.</p>
 
     <div class="team-container">
       <img src="https://cdn.jsdelivr.net/gh/franciscoleonardho-sys/o-que-voce-nao-ve@main/Francisco%20Leonardo.jpeg" alt="Francisco Leonardo" class="team-photo">
       
-      <!-- CRÉDITOS DA TELA DE ENTRADA (EM BLOCOS HIERÁRQUICOS) -->
       <div class="credits-group">
         <div class="credit-block">
           <span class="credit-title">Projeto Integrador</span>
@@ -631,17 +624,7 @@
         </div>
 
         <div class="credit-block">
-          <span class="credit-title">Curso</span>
-          <span class="credit-desc">Rádio, TV e Internet</span>
-        </div>
-
-        <div class="credit-block">
-          <span class="credit-title">Autor/Curadoria</span>
-          <span class="credit-desc">Francisco Leonardo | Chicão</span>
-        </div>
-
-        <div class="credit-block">
-          <span class="credit-title">Fotografia e Produção (edição)</span>
+          <span class="credit-title">Autor / Curadoria</span>
           <span class="credit-desc">Francisco Leonardo | Chicão</span>
         </div>
       </div>
@@ -659,12 +642,15 @@
 
   <header>
     <h2>O que você não vê</h2>
-    <p>Pessoas, rastros e histórias comuns</p>
+    <div class="header-subtitles">
+      <p>Uma experiência de pausa, observação e escuta</p>
+      <p>Pessoas, rastros e histórias comuns</p>
+    </div>
   </header>
 
   <main class="gallery-grid" id="gallery"></main>
 
-  <!-- RODAPÉ DA EXPOSIÇÃO -->
+  <!-- RODAPÉ COMPLETO -->
   <footer>
     <div class="footer-block">
       <span class="footer-title">Projeto Integrador</span>
