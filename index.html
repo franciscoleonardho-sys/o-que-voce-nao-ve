@@ -296,19 +296,24 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    .btn-like:hover, .btn-like.liked {
-      color: #e74c3c;
+    /* ESTILO DO CORAÇÃO SVG (CONTORNO BRANCO -> PREENCHIDO AMARELO) */
+    .heart-svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 2;
+      transition: all 0.3s ease;
     }
 
-    .heart-icon {
-      font-size: 1.1rem;
-      line-height: 1;
-      display: inline-block;
-      transition: transform 0.2s ease;
-    }
-
-    .btn-like.liked .heart-icon {
+    .btn-like.liked .heart-svg {
+      fill: var(--accent-color);
+      stroke: var(--accent-color);
       transform: scale(1.15);
+    }
+
+    .btn-like.liked {
+      color: var(--accent-color);
     }
 
     /* RODAPÉ FOSCO */
@@ -333,7 +338,7 @@
       margin-bottom: 8px;
     }
 
-    /* PLAYER DE MÚSICA DE FUNDO - FIX PARA CELULAR / SAFARI */
+    /* PLAYER DE MÚSICA DE FUNDO */
     .audio-player-container {
       position: fixed;
       bottom: 25px;
@@ -354,20 +359,21 @@
       background: none;
       border: none;
       color: var(--accent-color);
-      font-size: 1.2rem;
+      font-size: 1rem;
+      font-weight: bold;
       cursor: pointer;
       -webkit-appearance: none;
       appearance: none;
       outline: none;
       padding: 0;
       margin: 0;
-      line-height: 1;
       display: flex;
       align-items: center;
       justify-content: center;
       width: 28px;
       height: 28px;
       -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
 
     .progress-bar {
@@ -485,22 +491,25 @@
 
     .comment-item {
       background: #111;
-      padding: 10px 14px;
+      padding: 12px 14px;
       border-radius: 4px;
       border-left: 2px solid var(--accent-color);
-    }
-
-    .comment-author {
-      font-size: 0.8rem;
-      color: var(--accent-color);
-      font-weight: bold;
-      margin-bottom: 3px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
     .comment-text {
-      font-size: 0.88rem;
+      font-size: 0.92rem;
       color: var(--text-color);
       line-height: 1.4;
+    }
+
+    .comment-author {
+      font-size: 0.78rem;
+      color: var(--accent-color);
+      font-weight: 500;
+      opacity: 0.9;
     }
 
     .comment-form {
@@ -713,7 +722,10 @@
             <div class="photo-desc">${item.desc}</div>
             <div class="card-actions">
               <button class="btn-like" id="like-btn-${item.id}" onclick="likePhoto('${item.id}', event)">
-                <span class="heart-icon">🤍</span> <span id="like-count-${item.id}">0</span>
+                <svg class="heart-svg" viewBox="0 0 24 24">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                <span id="like-count-${item.id}">0</span>
               </button>
               <span style="font-size: 0.8rem; color: #555; cursor: pointer;" onclick="openLightbox('${item.id}', '${item.url}', '${item.titulo}', '${item.desc}')">💬 Comentar</span>
             </div>
@@ -734,9 +746,7 @@
       let currentLikes = parseInt(countEl.innerText) || 0;
 
       if (btnEl) {
-        btnEl.classList.add('liked');
-        const heartEl = btnEl.querySelector('.heart-icon');
-        if (heartEl) heartEl.innerText = '❤️';
+        btnEl.classList.toggle('liked');
       }
 
       if (db) {
@@ -755,7 +765,7 @@
       });
     }
 
-    /* SISTEMA DE COMENTÁRIOS */
+    /* SISTEMA DE COMENTÁRIOS (COMENTÁRIOPRIMEIRO, AUTOR DEPOIS) */
     function loadComments(photoId) {
       const listEl = document.getElementById('comments-list');
       listEl.innerHTML = '';
@@ -777,8 +787,8 @@
           const item = document.createElement('div');
           item.className = 'comment-item';
           item.innerHTML = `
-            <div class="comment-author">${escapeHtml(c.author)}</div>
             <div class="comment-text">${escapeHtml(c.text)}</div>
+            <div class="comment-author">— ${escapeHtml(c.author)}</div>
           `;
           listEl.appendChild(item);
         });
@@ -825,7 +835,7 @@
       if (authorAudio) authorAudio.pause();
 
       music.play().then(() => {
-        document.getElementById('play-pause-btn').innerText = '⏸';
+        document.getElementById('play-pause-btn').innerText = '❚❚';
       }).catch(e => console.log("Erro de reprodução:", e));
     }
 
@@ -836,7 +846,7 @@
     function toggleMusic() {
       if (music.paused) {
         music.play();
-        document.getElementById('play-pause-btn').innerText = '⏸';
+        document.getElementById('play-pause-btn').innerText = '❚❚';
       } else {
         music.pause();
         document.getElementById('play-pause-btn').innerText = '▶';
